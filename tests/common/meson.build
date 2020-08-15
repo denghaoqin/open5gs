@@ -30,6 +30,8 @@ libtestcommon_sources = files('''
     ngap-handler.c
     ngap-path.c
 
+    s1ap-build.c
+
     gmm-build.c
     gmm-handler.c
     gsm-build.c

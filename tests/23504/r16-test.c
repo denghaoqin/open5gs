@@ -98,9 +98,9 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, gtpu);
 
     /* Send S1-Setup Reqeust */
-    rv = tests1ap_build_setup_req(
-            &sendbuf, S1AP_ENB_ID_PR_macroENB_ID, 0x2000, 1, 235, 4, 2);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+    sendbuf = test_s1ap_build_s1_setup_request(
+            S1AP_ENB_ID_PR_macroENB_ID, 0x2000, 1, 235, 4, 2);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 

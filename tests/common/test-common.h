@@ -53,9 +53,12 @@ extern "C" {
 #include "common/nas-path.h"
 #include "common/nas-encoder.h"
 #include "common/nas-security.h"
+
 #include "common/ngap-build.h"
 #include "common/ngap-handler.h"
 #include "common/ngap-path.h"
+
+#include "common/s1ap-build.h"
 
 #undef OGS_LOG_DOMAIN
 #define OGS_LOG_DOMAIN 1
