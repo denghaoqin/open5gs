@@ -364,6 +364,133 @@ int test_context_parse_config(void)
                 } else
                     ogs_warn("unknown key `%s`", amf_key);
             }
+        } else if (!strcmp(root_key, "mme")) {
+            ogs_yaml_iter_t mme_iter;
+            ogs_yaml_iter_recurse(&root_iter, &mme_iter);
+            while (ogs_yaml_iter_next(&mme_iter)) {
+                const char *mme_key = ogs_yaml_iter_key(&mme_iter);
+                ogs_assert(mme_key);
+                if (!strcmp(mme_key, "tai")) {
+                    int num_of_list0 = 0;
+                    ogs_eps_tai0_list_t *list0 = NULL;
+                    ogs_eps_tai2_list_t *list2 = NULL;
+
+                    ogs_assert(self.num_of_e_served_tai <=
+                            OGS_MAX_NUM_OF_SERVED_TAI);
+                    list0 = &self.e_served_tai[self.num_of_e_served_tai].list0;
+                    ogs_assert(list0);
+                    list2 = &self.e_served_tai[self.num_of_e_served_tai].list2;
+                    ogs_assert(list2);
+
+                    ogs_yaml_iter_t tai_array, tai_iter;
+                    ogs_yaml_iter_recurse(&mme_iter, &tai_array);
+                    do {
+                        const char *mcc = NULL, *mnc = NULL;
+                        uint16_t tac[OGS_MAX_NUM_OF_TAI];
+                        int num_of_tac = 0;
+
+                        if (ogs_yaml_iter_type(&tai_array) ==
+                                YAML_MAPPING_NODE) {
+                            memcpy(&tai_iter, &tai_array,
+                                    sizeof(ogs_yaml_iter_t));
+                        } else if (ogs_yaml_iter_type(&tai_array) ==
+                            YAML_SEQUENCE_NODE) {
+                            if (!ogs_yaml_iter_next(&tai_array))
+                                break;
+                            ogs_yaml_iter_recurse(&tai_array,
+                                    &tai_iter);
+                        } else if (ogs_yaml_iter_type(&tai_array) ==
+                                YAML_SCALAR_NODE) {
+                            break;
+                        } else
+                            ogs_assert_if_reached();
+
+                        while (ogs_yaml_iter_next(&tai_iter)) {
+                            const char *tai_key = ogs_yaml_iter_key(&tai_iter);
+                            ogs_assert(tai_key);
+                            if (!strcmp(tai_key, "plmn_id")) {
+                                ogs_yaml_iter_t plmn_id_iter;
+
+                                ogs_yaml_iter_recurse(&tai_iter, &plmn_id_iter);
+                                while (ogs_yaml_iter_next(&plmn_id_iter)) {
+                                    const char *plmn_id_key =
+                                        ogs_yaml_iter_key(&plmn_id_iter);
+                                    ogs_assert(plmn_id_key);
+                                    if (!strcmp(plmn_id_key, "mcc")) {
+                                        mcc = ogs_yaml_iter_value(
+                                                &plmn_id_iter);
+                                    } else if (!strcmp(plmn_id_key, "mnc")) {
+                                        mnc = ogs_yaml_iter_value(
+                                                &plmn_id_iter);
+                                    }
+                                }
+                            } else if (!strcmp(tai_key, "tac")) {
+                                ogs_yaml_iter_t tac_iter;
+                                ogs_yaml_iter_recurse(&tai_iter, &tac_iter);
+                                ogs_assert(ogs_yaml_iter_type(&tac_iter) !=
+                                    YAML_MAPPING_NODE);
+
+                                do {
+                                    const char *v = NULL;
+
+                                    ogs_assert(num_of_tac <=
+                                            OGS_MAX_NUM_OF_TAI);
+                                    if (ogs_yaml_iter_type(&tac_iter) ==
+                                            YAML_SEQUENCE_NODE) {
+                                        if (!ogs_yaml_iter_next(&tac_iter))
+                                            break;
+                                    }
+
+                                    v = ogs_yaml_iter_value(&tac_iter);
+                                    if (v) {
+                                        tac[num_of_tac] = atoi(v);
+                                        num_of_tac++;
+                                    }
+                                } while (
+                                    ogs_yaml_iter_type(&tac_iter) ==
+                                        YAML_SEQUENCE_NODE);
+                            } else
+                                ogs_warn("unknown key `%s`", tai_key);
+                        }
+
+                        if (mcc && mnc && num_of_tac) {
+                            if (num_of_tac == 1) {
+                                ogs_plmn_id_build(
+                                    &list2->tai[list2->num].plmn_id,
+                                    atoi(mcc), atoi(mnc), strlen(mnc));
+                                list2->tai[list2->num].tac = tac[0];
+
+                                list2->num++;
+                                if (list2->num > 1)
+                                    list2->type = OGS_TAI2_TYPE;
+                                else
+                                    list2->type = OGS_TAI1_TYPE;
+                            } else if (num_of_tac > 1) {
+                                int i;
+                                ogs_plmn_id_build(
+                                    &list0->tai[num_of_list0].plmn_id,
+                                    atoi(mcc), atoi(mnc), strlen(mnc));
+                                for (i = 0; i < num_of_tac; i++) {
+                                    list0->tai[num_of_list0].tac[i] = tac[i];
+                                }
+
+                                list0->tai[num_of_list0].num = num_of_tac;
+                                list0->tai[num_of_list0].type = OGS_TAI0_TYPE;
+
+                                num_of_list0++;
+                            }
+                        } else {
+                            ogs_warn("Ignore tai : mcc(%p), mnc(%p), "
+                                    "num_of_tac(%d)", mcc, mnc, num_of_tac);
+                        }
+                    } while (ogs_yaml_iter_type(&tai_array) ==
+                            YAML_SEQUENCE_NODE);
+
+                    if (list2->num || num_of_list0) {
+                        self.num_of_e_served_tai++;
+                    }
+                }
+            }
         }
     }
 

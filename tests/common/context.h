@@ -48,7 +48,14 @@ typedef struct test_context_s {
         ogs_s_nssai_t s_nssai[OGS_MAX_NUM_OF_S_NSSAI];
     } plmn_support[OGS_MAX_NUM_OF_PLMN];
 
-    /* Served TAI */
+    /* Served EPC TAI */
+    uint8_t num_of_e_served_tai;
+    struct {
+        ogs_eps_tai0_list_t list0;
+        ogs_eps_tai2_list_t list2;
+    } e_served_tai[OGS_MAX_NUM_OF_SERVED_TAI];
+
+    /* Served 5GC TAI */
     uint8_t num_of_nr_served_tai;
     struct {
         ogs_5gs_tai0_list_t list0;
