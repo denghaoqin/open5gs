@@ -245,7 +245,7 @@ ogs_pkbuf_t *testngap_build_initial_ue_message(
     ogs_ngap_nr_cgi_to_ASN(&test_self()->nr_cgi, nR_CGI);
 
     tAI = &userLocationInformationNR->tAI;
-    ogs_ngap_5gs_tai_to_ASN(&test_self()->tai, tAI);
+    ogs_ngap_5gs_tai_to_ASN(&test_self()->nr_tai, tAI);
 
     UserLocationInformation->present =
         NGAP_UserLocationInformation_PR_userLocationInformationNR;
@@ -381,7 +381,7 @@ ogs_pkbuf_t *testngap_build_uplink_nas_transport(
     ogs_ngap_nr_cgi_to_ASN(&test_self()->nr_cgi, nR_CGI);
 
     tAI = &userLocationInformationNR->tAI;
-    ogs_ngap_5gs_tai_to_ASN(&test_self()->tai, tAI);
+    ogs_ngap_5gs_tai_to_ASN(&test_self()->nr_tai, tAI);
 
     UserLocationInformation->present =
         NGAP_UserLocationInformation_PR_userLocationInformationNR;

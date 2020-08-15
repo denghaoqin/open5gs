@@ -104,7 +104,7 @@ static void test1_func(abts_case *tc, void *data)
     mobile_identity_suci.h.supi_format = OGS_NAS_5GS_SUPI_FORMAT_IMSI;
     mobile_identity_suci.h.type = OGS_NAS_5GS_MOBILE_IDENTITY_SUCI;
     ogs_nas_from_plmn_id(&mobile_identity_suci.nas_plmn_id,
-            &test_self()->tai.plmn_id);
+            &test_self()->nr_tai.plmn_id);
     mobile_identity_suci.routing_indicator1 = 0;
     mobile_identity_suci.routing_indicator2 = 0xf;
     mobile_identity_suci.routing_indicator3 = 0xf;

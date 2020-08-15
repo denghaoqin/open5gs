@@ -54,16 +54,17 @@ static int test_context_prepare(void)
 static int test_context_validation(void)
 {
     if (test_self()->served_tai[0].list2.num) {
-        memcpy(&test_self()->tai, 
+        memcpy(&test_self()->nr_tai, 
             &test_self()->served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
     } else if (test_self()->served_tai[0].list0.tai[0].num) {
-        test_self()->tai.tac = test_self()->served_tai[0].list0.tai[0].tac[0];
-        memcpy(&test_self()->tai.plmn_id,
+        test_self()->nr_tai.tac =
+            test_self()->served_tai[0].list0.tai[0].tac[0];
+        memcpy(&test_self()->nr_tai.plmn_id,
                 &test_self()->served_tai[0].list0.tai[0].plmn_id,
                 OGS_PLMN_ID_LEN);
     }
 
-    memcpy(&test_self()->nr_cgi.plmn_id, &test_self()->tai.plmn_id,
+    memcpy(&test_self()->nr_cgi.plmn_id, &test_self()->nr_tai.plmn_id,
             OGS_PLMN_ID_LEN);
     test_self()->nr_cgi.cell_id = 0x40001;
 

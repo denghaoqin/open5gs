@@ -169,8 +169,8 @@ ogs_pkbuf_t *testgmm_build_registration_request(
         registration_request->presencemask |=
         OGS_NAS_5GS_REGISTRATION_REQUEST_LAST_VISITED_REGISTERED_TAI_PRESENT;
         ogs_nas_from_plmn_id(&last_visited_registered_tai->nas_plmn_id,
-                &test_self()->tai.plmn_id);
-        last_visited_registered_tai->tac.v = test_self()->tai.tac.v;
+                &test_self()->nr_tai.plmn_id);
+        last_visited_registered_tai->tac.v = test_self()->nr_tai.tac.v;
     }
 
     if (test_ue->registration_request_param.ue_usage_setting) {
@@ -436,7 +436,7 @@ ogs_pkbuf_t *testgmm_build_authentication_response(test_ue_t *test_ue)
     milenage_f2345(test_ue->opc, test_ue->k, test_ue->rand,
             res, ck, ik, ak, NULL);
     serving_network_name =
-        ogs_serving_network_name_from_plmn_id(&test_self()->tai.plmn_id);
+        ogs_serving_network_name_from_plmn_id(&test_self()->nr_tai.plmn_id);
     ogs_kdf_xres_star(
             ck, ik,
             serving_network_name, test_ue->rand, res, 8,

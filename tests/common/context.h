@@ -62,7 +62,7 @@ typedef struct test_context_s {
         ogs_s_nssai_t s_nssai[OGS_MAX_NUM_OF_S_NSSAI];
     } plmn_support[OGS_MAX_NUM_OF_PLMN];
 
-    ogs_5gs_tai_t tai;
+    ogs_5gs_tai_t nr_tai;
     ogs_nr_cgi_t nr_cgi;
 } test_context_t;
 
