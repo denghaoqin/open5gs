@@ -20,9 +20,8 @@
 #ifndef TEST_EPC_H
 #define TEST_EPC_H
 
+#include "test-common.h"
 #include "test-packet.h"
-
-#include "mme/mme-context.h"
 
 #ifdef __cplusplus
 extern "C" {

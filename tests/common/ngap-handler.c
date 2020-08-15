@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "test-ngap.h"
+#include "test-common.h"
 
 void testngap_handle_ng_setup_response(
         test_ue_t *test_ue, ogs_ngap_message_t *message)

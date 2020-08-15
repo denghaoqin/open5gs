@@ -23,8 +23,6 @@
 #include "ogs-s1ap.h"
 #include "mme/s1ap-build.h"
 
-#include "test-common.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

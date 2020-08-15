@@ -20,9 +20,7 @@
 #ifndef TEST_APP_H
 #define TEST_APP_H
 
-#include "test-packet.h"
-
-#include "mme/mme-context.h"
+#include "test-common.h"
 
 #ifdef __cplusplus
 extern "C" {

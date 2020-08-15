@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "test-ngap.h"
+#include "test-common.h"
 
 static ogs_pkbuf_t *testngap_build_pdu_session_resource_setup_response_trasfer(
         test_sess_t *sess);

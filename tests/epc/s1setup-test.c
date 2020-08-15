@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "test-common.h"
 #include "test-packet.h"
 
 #define NUM_OF_TEST_DUPLICATED_ENB 4

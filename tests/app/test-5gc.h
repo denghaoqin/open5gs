@@ -21,7 +21,6 @@
 #define TEST_5GC_H
 
 #include "test-common.h"
-#include "test-ngap.h"
 
 #ifdef __cplusplus
 extern "C" {
