@@ -40,20 +40,20 @@ extern "C" {
 #define MAX_NUM_OF_SERVED_GUAMI     8
 
 typedef struct test_context_s {
-    /* Served TAI */
-    uint8_t num_of_served_tai;
-    struct {
-        ogs_5gs_tai0_list_t list0;
-        ogs_5gs_tai2_list_t list2;
-    } served_tai[OGS_MAX_NUM_OF_SERVED_TAI];
-
-    /* PLMN Support */
+    /* 5G PLMN Support */
     uint8_t num_of_plmn_support;
     struct {
         ogs_plmn_id_t plmn_id;
         int num_of_s_nssai;
         ogs_s_nssai_t s_nssai[OGS_MAX_NUM_OF_S_NSSAI];
     } plmn_support[OGS_MAX_NUM_OF_PLMN];
+
+    /* Served TAI */
+    uint8_t num_of_nr_served_tai;
+    struct {
+        ogs_5gs_tai0_list_t list0;
+        ogs_5gs_tai2_list_t list2;
+    } nr_served_tai[OGS_MAX_NUM_OF_SERVED_TAI];
 
     ogs_5gs_tai_t nr_tai;
     ogs_nr_cgi_t nr_cgi;

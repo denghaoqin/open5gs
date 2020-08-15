@@ -53,14 +53,14 @@ static int test_context_prepare(void)
 
 static int test_context_validation(void)
 {
-    if (test_self()->served_tai[0].list2.num) {
+    if (test_self()->nr_served_tai[0].list2.num) {
         memcpy(&test_self()->nr_tai, 
-            &test_self()->served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
-    } else if (test_self()->served_tai[0].list0.tai[0].num) {
+            &test_self()->nr_served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
+    } else if (test_self()->nr_served_tai[0].list0.tai[0].num) {
         test_self()->nr_tai.tac =
-            test_self()->served_tai[0].list0.tai[0].tac[0];
+            test_self()->nr_served_tai[0].list0.tai[0].tac[0];
         memcpy(&test_self()->nr_tai.plmn_id,
-                &test_self()->served_tai[0].list0.tai[0].plmn_id,
+                &test_self()->nr_served_tai[0].list0.tai[0].plmn_id,
                 OGS_PLMN_ID_LEN);
     }
 
@@ -98,11 +98,13 @@ int test_context_parse_config(void)
                     ogs_5gs_tai0_list_t *list0 = NULL;
                     ogs_5gs_tai2_list_t *list2 = NULL;
 
-                    ogs_assert(self.num_of_served_tai <=
+                    ogs_assert(self.num_of_nr_served_tai <=
                             OGS_MAX_NUM_OF_SERVED_TAI);
-                    list0 = &self.served_tai[self.num_of_served_tai].list0;
+                    list0 =
+                        &self.nr_served_tai[self.num_of_nr_served_tai].list0;
                     ogs_assert(list0);
-                    list2 = &self.served_tai[self.num_of_served_tai].list2;
+                    list2 =
+                        &self.nr_served_tai[self.num_of_nr_served_tai].list2;
                     ogs_assert(list2);
 
                     ogs_yaml_iter_t tai_array, tai_iter;
@@ -211,7 +213,7 @@ int test_context_parse_config(void)
                             YAML_SEQUENCE_NODE);
 
                     if (list2->num || num_of_list0) {
-                        self.num_of_served_tai++;
+                        self.num_of_nr_served_tai++;
                     }
                 } else if (!strcmp(amf_key, "plmn")) {
                     ogs_yaml_iter_t plmn_array, plmn_iter;

@@ -108,13 +108,13 @@ ogs_pkbuf_t *testngap_build_ng_setup_request(uint32_t gnb_id, uint8_t bitsize)
             strlen(ran_node_name), RANNodeName);
 
     SupportedTAItem = CALLOC(1, sizeof(NGAP_SupportedTAItem_t));
-    if (test_self()->served_tai[0].list2.num)
+    if (test_self()->nr_served_tai[0].list2.num)
         ogs_asn_uint24_to_OCTET_STRING(
-            test_self()->served_tai[0].list2.tai[0].tac,
+            test_self()->nr_served_tai[0].list2.tai[0].tac,
             &SupportedTAItem->tAC);
-    else if (test_self()->served_tai[0].list0.tai[0].num)
+    else if (test_self()->nr_served_tai[0].list0.tai[0].num)
         ogs_asn_uint24_to_OCTET_STRING(
-            test_self()->served_tai[0].list0.tai[0].tac[0],
+            test_self()->nr_served_tai[0].list0.tai[0].tac[0],
                 &SupportedTAItem->tAC);
     else
         ogs_assert_if_reached();
