@@ -40,13 +40,6 @@ extern "C" {
 #define MAX_NUM_OF_SERVED_GUAMI     8
 
 typedef struct test_context_s {
-    /* Served GUMME */
-    uint8_t num_of_served_guami;
-    struct {
-        ogs_plmn_id_t plmn_id;
-        ogs_amf_id_t amf_id;
-    } served_guami[MAX_NUM_OF_SERVED_GUAMI];
-
     /* Served TAI */
     uint8_t num_of_served_tai;
     struct {
