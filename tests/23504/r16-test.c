@@ -90,11 +90,11 @@ static void test1_func(abts_case *tc, void *data)
     test_ue.imsi = (char *)"235047364000060";
 
     /* eNB connects to MME */
-    s1ap = testenb_s1ap_client("127.0.0.1");
+    s1ap = testenb_s1ap_client(TEST_MME_IPV4);
     ABTS_PTR_NOTNULL(tc, s1ap);
 
     /* eNB connects to SGW */
-    gtpu = testenb_gtpu_server("127.0.0.5");
+    gtpu = testenb_gtpu_server(TEST_ENB_IPV4);
     ABTS_PTR_NOTNULL(tc, gtpu);
 
     /* Send S1-Setup Reqeust */
@@ -107,10 +107,7 @@ static void test1_func(abts_case *tc, void *data)
     /* Receive S1-Setup Response */
     recvbuf = testenb_s1ap_read(s1ap);
     ABTS_PTR_NOTNULL(tc, recvbuf);
-    rv = ogs_s1ap_decode(&message, recvbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-    ogs_s1ap_free(&message);
-    ogs_pkbuf_free(recvbuf);
+    tests1ap_recv(&test_ue, recvbuf);
 
     /********** Insert Subscriber in Database */
     collection = mongoc_client_get_collection(

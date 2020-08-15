@@ -59,6 +59,8 @@ extern "C" {
 #include "common/ngap-path.h"
 
 #include "common/s1ap-build.h"
+#include "common/s1ap-handler.h"
+#include "common/s1ap-path.h"
 
 #undef OGS_LOG_DOMAIN
 #define OGS_LOG_DOMAIN 1
