@@ -92,6 +92,19 @@ typedef struct test_registration_request_param_s {
     } psimask;
 } __attribute__ ((packed)) test_registration_request_param_t;
 
+typedef struct test_attach_request_param_s {
+    struct {
+    ED8(uint8_t integrity_protected:1;,
+        uint8_t ciphered:1;,
+        uint8_t guti:1;,
+        uint8_t gmm_capability:1;,
+        uint8_t requested_nssai:1;,
+        uint8_t last_visited_registered_tai:1;,
+        uint8_t ue_usage_setting:1;,
+        uint8_t update_type:1;)
+    };
+} __attribute__ ((packed)) test_attach_request_param_t;
+
 typedef struct test_service_request_param_s {
     union {
         struct {
@@ -136,6 +149,7 @@ typedef struct test_ue_s {
     ogs_nas_mobile_identity_imeisv_t mobile_identity_imeisv;
     uint16_t mobile_identity_suci_length;
     ogs_nas_5gs_guti_t nas_guti;
+    ogs_nas_eps_guti_t nas_eps_guti;
 
     uint8_t k[OGS_KEY_LEN];
     uint8_t opc[OGS_KEY_LEN];
@@ -157,6 +171,7 @@ typedef struct test_ue_s {
             };
             ogs_nas_5gs_registration_type_t registration;
             ogs_nas_de_registration_type_t de_registration;
+            ogs_nas_eps_attach_type_t attach_type;
 
             uint8_t data;
         };
@@ -195,6 +210,7 @@ typedef struct test_ue_s {
     int             mac_failed;
 
     test_registration_request_param_t registration_request_param;
+    test_attach_request_param_t attach_request_param;
     test_service_request_param_t service_request_param;
     uint8_t         gmm_message_type; /* Last received 5GMM message type */
 

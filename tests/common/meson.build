@@ -30,14 +30,17 @@ libtestcommon_sources = files('''
     ngap-handler.c
     ngap-path.c
 
-    s1ap-build.c
-    s1ap-handler.c
-    s1ap-path.c
-
     gmm-build.c
     gmm-handler.c
     gsm-build.c
     gsm-handler.c
+
+    s1ap-build.c
+    s1ap-handler.c
+    s1ap-path.c
+
+    esm-build.c
+    emm-build.c
 
     nas-path.c
     nas-encoder.c
