@@ -28,8 +28,8 @@ ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess)
         &pdn_connectivity_request->request_type;
     ogs_nas_protocol_configuration_options_t *protocol_configuration_options =
         &pdn_connectivity_request->protocol_configuration_options;
-    uint8_t ue_pco[31] =
-            "\x27\x1d\x80\x80\x21\x10\x01\x01\x00\x10\x81\x06\x00\x00\x00\x00"
+    uint8_t ue_pco[29] =
+            "\x80\x80\x21\x10\x01\x01\x00\x10\x81\x06\x00\x00\x00\x00"
             "\x83\x06\x00\x00\x00\x00\x00\x03\x00\x00\x0a\x00\x00\x0d\x00";
 
     test_ue_t *test_ue = NULL;
@@ -48,6 +48,10 @@ ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess)
 
     request_type->type = OGS_NAS_EPS_PDN_TYPE_IPV4V6;
     request_type->value = OGS_NAS_5GS_REQUEST_TYPE_INITIAL;
+
+    pdn_connectivity_request->presencemask |= OGS_NAS_EPS_PDN_CONNECTIVITY_REQUEST_PROTOCOL_CONFIGURATION_OPTIONS_PRESENT;
+    protocol_configuration_options->length = sizeof(ue_pco);
+    memcpy(protocol_configuration_options->buffer, ue_pco, sizeof(ue_pco));
 
     return ogs_nas_eps_plain_encode(&message);
 }
