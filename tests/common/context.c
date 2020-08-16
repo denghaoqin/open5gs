@@ -571,6 +571,9 @@ test_ue_t *test_ue_add_by_suci(
     memcpy(&test_ue->e_tai, &test_self()->e_tai, sizeof(ogs_eps_tai_t));
     memcpy(&test_ue->e_cgi, &test_self()->e_cgi, sizeof(ogs_e_cgi_t));
 
+    memcpy(&test_ue->nr_tai, &test_self()->nr_tai, sizeof(ogs_5gs_tai_t));
+    memcpy(&test_ue->nr_cgi, &test_self()->nr_cgi, sizeof(ogs_nr_cgi_t));
+
     ogs_nas_from_plmn_id(
             &mobile_identity_suci->nas_plmn_id, &test_ue->e_tai.plmn_id);
 
