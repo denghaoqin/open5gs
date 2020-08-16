@@ -47,6 +47,7 @@ void tests1ap_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
             tests1ap_handle_downlink_nas_transport(test_ue, pdu);
             break;
         case S1AP_ProcedureCode_id_InitialContextSetup:
+            ogs_fatal("TODO");
 #if 0
             tests1ap_handle_initial_context_setup_request(test_ue, pdu);
 #endif

@@ -215,10 +215,11 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     tests1ap_recv(test_ue, recvbuf);
 
-#if 0
-    /* Send Security mode Complete */
-    rv = tests1ap_build_security_mode_complete(&sendbuf, msgindex);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+    /* Send Security mode complete */
+    emmbuf = testemm_build_security_mode_complete(test_ue);
+    ABTS_PTR_NOTNULL(tc, emmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, emmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
@@ -227,8 +228,9 @@ static void test1_func(abts_case *tc, void *data)
      * Activate Default Bearer Context Request */
     recvbuf = testenb_s1ap_read(s1ap);
     ABTS_PTR_NOTNULL(tc, recvbuf);
-    ogs_pkbuf_free(recvbuf);
+    tests1ap_recv(test_ue, recvbuf);
 
+#if 0
     /* Send Initial Context Setup Response */
     rv = tests1ap_build_initial_context_setup_response(&sendbuf,
             16777373, 1, 5, 1, "127.0.0.5");
