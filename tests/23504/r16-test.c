@@ -109,6 +109,9 @@ static void test1_func(abts_case *tc, void *data)
     test_ue->nas.ksi = OGS_NAS_KSI_NO_KEY_IS_AVAILABLE;
     test_ue->nas.value = OGS_NAS_ATTACH_TYPE_COMBINED_EPS_IMSI_ATTACH;
 
+    OGS_HEX(_k_string, strlen(_k_string), test_ue->k);
+    OGS_HEX(_opc_string, strlen(_opc_string), test_ue->opc);
+
     sess = test_sess_add_by_apn(test_ue, "internet");
     ogs_assert(sess);
 
