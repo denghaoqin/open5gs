@@ -104,6 +104,7 @@ static void test1_func(abts_case *tc, void *data)
 
     test_ue = test_ue_add_by_suci(&mobile_identity_suci, 13);
     ogs_assert(test_ue);
+    test_ue->e_cgi.cell_id = 0x200010;
     sess = test_sess_add_by_apn(test_ue, "internet");
     ogs_assert(sess);
 

@@ -76,10 +76,6 @@ static int test_context_validation(void)
                 OGS_PLMN_ID_LEN);
     }
 
-    memcpy(&test_self()->e_cgi.plmn_id, &test_self()->e_tai.plmn_id,
-            OGS_PLMN_ID_LEN);
-    test_self()->e_cgi.cell_id = 0x1234;
-
     if (test_self()->nr_served_tai[0].list2.num) {
         memcpy(&test_self()->nr_tai, 
             &test_self()->nr_served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
@@ -569,10 +565,10 @@ test_ue_t *test_ue_add_by_suci(
     memset(test_ue, 0, sizeof *test_ue);
 
     memcpy(&test_ue->e_tai, &test_self()->e_tai, sizeof(ogs_eps_tai_t));
-    memcpy(&test_ue->e_cgi, &test_self()->e_cgi, sizeof(ogs_e_cgi_t));
+    memcpy(&test_ue->e_cgi.plmn_id, &test_ue->e_tai.plmn_id, OGS_PLMN_ID_LEN);
 
     memcpy(&test_ue->nr_tai, &test_self()->nr_tai, sizeof(ogs_5gs_tai_t));
-    memcpy(&test_ue->nr_cgi, &test_self()->nr_cgi, sizeof(ogs_nr_cgi_t));
+    memcpy(&test_ue->nr_cgi.plmn_id, &test_ue->nr_tai.plmn_id, OGS_PLMN_ID_LEN);
 
     ogs_nas_from_plmn_id(
             &mobile_identity_suci->nas_plmn_id, &test_ue->e_tai.plmn_id);

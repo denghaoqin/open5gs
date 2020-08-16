@@ -56,7 +56,6 @@ typedef struct test_context_s {
     } e_served_tai[OGS_MAX_NUM_OF_SERVED_TAI];
 
     ogs_eps_tai_t e_tai;
-    ogs_e_cgi_t e_cgi;
 
     /* Served 5GC TAI */
     uint8_t num_of_nr_served_tai;
