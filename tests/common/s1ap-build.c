@@ -97,3 +97,114 @@ ogs_pkbuf_t *test_s1ap_build_s1_setup_request(
 
     return ogs_s1ap_encode(&pdu);
 }
+
+ogs_pkbuf_t *test_s1ap_build_initial_ue_message(
+        test_ue_t *test_ue, ogs_pkbuf_t *emmbuf, bool s_tmsi)
+{
+    ogs_pkbuf_t *pkbuf = NULL;
+    int i, j;
+    char buf[5];
+
+    S1AP_S1AP_PDU_t pdu;
+    S1AP_InitiatingMessage_t *initiatingMessage = NULL;
+    S1AP_InitialUEMessage_t *InitialUEMessage = NULL;
+
+    S1AP_InitialUEMessage_IEs_t *ie = NULL;
+    S1AP_ENB_UE_S1AP_ID_t *ENB_UE_S1AP_ID = NULL;
+    S1AP_NAS_PDU_t *NAS_PDU = NULL;
+    S1AP_TAI_t *TAI = NULL;
+    S1AP_EUTRAN_CGI_t *EUTRAN_CGI = NULL;
+    S1AP_RRC_Establishment_Cause_t *RRC_Establishment_Cause = NULL;
+
+    ogs_assert(test_ue);
+    ogs_assert(emmbuf);
+
+    memset(&pdu, 0, sizeof (S1AP_S1AP_PDU_t));
+    pdu.present = S1AP_S1AP_PDU_PR_initiatingMessage;
+    pdu.choice.initiatingMessage =
+        CALLOC(1, sizeof(S1AP_InitiatingMessage_t));
+
+    initiatingMessage = pdu.choice.initiatingMessage;
+    initiatingMessage->procedureCode = S1AP_ProcedureCode_id_initialUEMessage;
+    initiatingMessage->criticality = S1AP_Criticality_reject;
+    initiatingMessage->value.present =
+        S1AP_InitiatingMessage__value_PR_InitialUEMessage;
+
+    InitialUEMessage = &initiatingMessage->value.choice.InitialUEMessage;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialUEMessage_IEs_t));
+    ASN_SEQUENCE_ADD(&InitialUEMessage->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_eNB_UE_S1AP_ID;
+    ie->criticality = S1AP_Criticality_reject;
+    ie->value.present = S1AP_InitialUEMessage_IEs__value_PR_ENB_UE_S1AP_ID;
+
+    ENB_UE_S1AP_ID = &ie->value.choice.ENB_UE_S1AP_ID;
+
+    test_ue->enb_ue_s1ap_id++;
+    *ENB_UE_S1AP_ID = test_ue->enb_ue_s1ap_id;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialUEMessage_IEs_t));
+    ASN_SEQUENCE_ADD(&InitialUEMessage->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_NAS_PDU;
+    ie->criticality = S1AP_Criticality_reject;
+    ie->value.present = S1AP_InitialUEMessage_IEs__value_PR_NAS_PDU;
+
+    NAS_PDU = &ie->value.choice.NAS_PDU;
+
+    NAS_PDU->size = emmbuf->len;
+    NAS_PDU->buf = CALLOC(NAS_PDU->size, sizeof(uint8_t));
+    memcpy(NAS_PDU->buf, emmbuf->data, NAS_PDU->size);
+    ogs_pkbuf_free(emmbuf);
+
+    ie = CALLOC(1, sizeof(S1AP_InitialUEMessage_IEs_t));
+    ASN_SEQUENCE_ADD(&InitialUEMessage->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_TAI;
+    ie->criticality = S1AP_Criticality_reject;
+    ie->value.present = S1AP_InitialUEMessage_IEs__value_PR_TAI;
+
+    TAI = &ie->value.choice.TAI;
+
+    ogs_asn_uint16_to_OCTET_STRING(
+            test_ue->e_tai.tac, &TAI->tAC);
+    ogs_s1ap_buffer_to_OCTET_STRING(
+            &test_ue->e_tai.plmn_id, OGS_PLMN_ID_LEN, &TAI->pLMNidentity);
+
+    ie = CALLOC(1, sizeof(S1AP_InitialUEMessage_IEs_t));
+    ASN_SEQUENCE_ADD(&InitialUEMessage->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_EUTRAN_CGI;
+    ie->criticality = S1AP_Criticality_ignore;
+    ie->value.present = S1AP_InitialUEMessage_IEs__value_PR_EUTRAN_CGI;
+
+    EUTRAN_CGI = &ie->value.choice.EUTRAN_CGI;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialUEMessage_IEs_t));
+    ASN_SEQUENCE_ADD(&InitialUEMessage->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_RRC_Establishment_Cause;
+    ie->criticality = S1AP_Criticality_ignore;
+    ie->value.present =
+        S1AP_InitialUEMessage_IEs__value_PR_RRC_Establishment_Cause;
+
+    ogs_s1ap_buffer_to_OCTET_STRING(
+            &test_ue->e_cgi.plmn_id,
+            OGS_PLMN_ID_LEN, &EUTRAN_CGI->pLMNidentity);
+    EUTRAN_CGI->cell_ID.size = 4;
+    EUTRAN_CGI->cell_ID.buf =  CALLOC(
+         EUTRAN_CGI->cell_ID.size, sizeof(uint8_t));
+    ogs_assert(EUTRAN_CGI->cell_ID.buf);
+    EUTRAN_CGI->cell_ID.buf[0] = (test_ue->e_cgi.cell_id >> 24);
+    EUTRAN_CGI->cell_ID.buf[1] = (test_ue->e_cgi.cell_id >> 16);
+    EUTRAN_CGI->cell_ID.buf[2] = (test_ue->e_cgi.cell_id >> 8);
+    EUTRAN_CGI->cell_ID.buf[3] = (test_ue->e_cgi.cell_id);
+    EUTRAN_CGI->cell_ID.bits_unused = 4;
+
+    RRC_Establishment_Cause = &ie->value.choice.RRC_Establishment_Cause;
+
+    *RRC_Establishment_Cause = S1AP_RRC_Establishment_Cause_mo_Signalling;
+
+    return ogs_s1ap_encode(&pdu);
+}

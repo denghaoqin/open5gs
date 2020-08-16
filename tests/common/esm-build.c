@@ -19,7 +19,7 @@
 
 #include "test-common.h"
 
-ogs_pkbuf_t *testgsm_build_pdn_connectivity_request(test_sess_t *test_sess)
+ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *test_sess)
 {
     ogs_nas_eps_message_t message;
     ogs_nas_eps_pdn_connectivity_request_t *pdn_connectivity_request =

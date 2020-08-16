@@ -65,6 +65,7 @@ ogs_pkbuf_t *testemm_build_attach_request(
 
     memcpy(&eps_attach_type, &test_ue->nas.data, sizeof(eps_attach_type));
 
+#if 0
     if (test_ue->attach_request_param.guti) {
         eps_mobile_identity->length =
             sizeof(ogs_nas_eps_mobile_identity_guti_t);
@@ -76,13 +77,18 @@ ogs_pkbuf_t *testemm_build_attach_request(
         eps_mobile_identity->guti.mme_code = test_ue->nas_eps_guti.mme_code;
         eps_mobile_identity->guti.m_tmsi = test_ue->nas_eps_guti.m_tmsi;
     } else {
-#if 0
-        attach_request->mobile_identity.length =
-            test_ue->mobile_identity_suci_length;
-        attach_request->mobile_identity.buffer =
-            &test_ue->mobile_identity_suci;
-#endif
     }
+#endif
+
+        eps_mobile_identity->length =
+            sizeof(ogs_nas_eps_mobile_identity_guti_t);
+        eps_mobile_identity->guti.odd_even = OGS_NAS_MOBILE_IDENTITY_EVEN;
+        eps_mobile_identity->guti.type = OGS_NAS_EPS_MOBILE_IDENTITY_GUTI;
+        eps_mobile_identity->guti.nas_plmn_id =
+            test_ue->nas_eps_guti.nas_plmn_id;
+        eps_mobile_identity->guti.mme_gid = test_ue->nas_eps_guti.mme_gid;
+        eps_mobile_identity->guti.mme_code = test_ue->nas_eps_guti.mme_code;
+        eps_mobile_identity->guti.m_tmsi = test_ue->nas_eps_guti.m_tmsi;
 
     ue_network_capability->length = 7;
     ue_network_capability->eea = 0xf0;

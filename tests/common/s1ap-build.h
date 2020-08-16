@@ -28,6 +28,9 @@ ogs_pkbuf_t *test_s1ap_build_s1_setup_request(
         S1AP_ENB_ID_PR present, uint32_t enb_id,
         int tac, uint16_t mcc, uint16_t mnc, uint16_t mnc_len);
 
+ogs_pkbuf_t *test_s1ap_build_initial_ue_message(
+        test_ue_t *test_ue, ogs_pkbuf_t *emmbuf, bool s_tmsi);
+
 #ifdef __cplusplus
 }
 #endif

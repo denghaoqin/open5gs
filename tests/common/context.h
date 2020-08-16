@@ -138,8 +138,10 @@ typedef struct test_ul_nas_transport_param_s {
 } __attribute__ ((packed)) test_ul_nas_transport_param_t;
 
 typedef struct test_ue_s {
-    uint32_t ran_ue_ngap_id; /* eNB-UE-NGAP-ID received from eNB */
+    uint32_t ran_ue_ngap_id; /* gNB-UE-NGAP-ID received from gNB */
     uint64_t amf_ue_ngap_id; /* AMF-UE-NGAP-ID received from AMF */
+    uint32_t enb_ue_s1ap_id; /* eNB-UE-S1AP-ID received from eNB */
+    uint64_t mme_ue_s1ap_id; /* MME-UE-S1AP-ID received from MME */
 
     char *imsi;
     char *suci; /* TS33.501 : SUCI */
@@ -150,6 +152,11 @@ typedef struct test_ue_s {
     uint16_t mobile_identity_suci_length;
     ogs_nas_5gs_guti_t nas_guti;
     ogs_nas_eps_guti_t nas_eps_guti;
+
+    ogs_eps_tai_t e_tai;
+    ogs_e_cgi_t e_cgi;
+    ogs_5gs_tai_t nr_tai;
+    ogs_nr_cgi_t nr_cgi;
 
     uint8_t k[OGS_KEY_LEN];
     uint8_t opc[OGS_KEY_LEN];
