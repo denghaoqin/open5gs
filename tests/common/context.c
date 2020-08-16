@@ -22,6 +22,10 @@
 
 static test_context_t self;
 
+static OGS_POOL(test_ue_pool, test_ue_t);
+static OGS_POOL(test_sess_pool, test_sess_t);
+static OGS_POOL(test_bearer_pool, test_bearer_t);
+
 static int context_initialized = 0;
 
 void test_context_init(void)
@@ -31,12 +35,20 @@ void test_context_init(void)
     /* Initialize AMF context */
     memset(&self, 0, sizeof(test_context_t));
 
+    ogs_pool_init(&test_ue_pool, ogs_config()->pool.ue);
+    ogs_pool_init(&test_sess_pool, ogs_config()->pool.sess);
+    ogs_pool_init(&test_bearer_pool, ogs_config()->pool.bearer);
+
     context_initialized = 1;
 }
 
 void test_context_final(void)
 {
     ogs_assert(context_initialized == 1);
+
+    ogs_pool_final(&test_ue_pool);
+    ogs_pool_final(&test_bearer_pool);
+    ogs_pool_final(&test_sess_pool);
 
     context_initialized = 0;
 }
@@ -53,6 +65,21 @@ static int test_context_prepare(void)
 
 static int test_context_validation(void)
 {
+    if (test_self()->e_served_tai[0].list2.num) {
+        memcpy(&test_self()->e_tai, 
+            &test_self()->e_served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
+    } else if (test_self()->e_served_tai[0].list0.tai[0].num) {
+        test_self()->e_tai.tac =
+            test_self()->e_served_tai[0].list0.tai[0].tac[0];
+        memcpy(&test_self()->e_tai.plmn_id,
+                &test_self()->e_served_tai[0].list0.tai[0].plmn_id,
+                OGS_PLMN_ID_LEN);
+    }
+
+    memcpy(&test_self()->e_cgi.plmn_id, &test_self()->e_tai.plmn_id,
+            OGS_PLMN_ID_LEN);
+    test_self()->e_cgi.cell_id = 0x1234;
+
     if (test_self()->nr_served_tai[0].list2.num) {
         memcpy(&test_self()->nr_tai, 
             &test_self()->nr_served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
@@ -500,23 +527,6 @@ int test_context_parse_config(void)
     return OGS_OK;
 }
 
-void test_ue_set_mobile_identity(test_ue_t *test_ue,
-        ogs_nas_5gs_mobile_identity_t *mobile_identity)
-{
-    ogs_assert(test_ue);
-    ogs_assert(mobile_identity);
-
-    if (test_ue->suci)
-        ogs_free(test_ue->suci);
-    test_ue->suci = ogs_nas_5gs_suci_from_mobile_identity(mobile_identity);
-    if (test_ue->supi)
-        ogs_free(test_ue->supi);
-    test_ue->supi = ogs_supi_from_suci(test_ue->suci);
-    if (test_ue->imsi)
-        ogs_free(test_ue->imsi);
-    test_ue->imsi = ogs_id_get_value(test_ue->supi);
-}
-
 void test_ue_set_mobile_identity_suci(test_ue_t *test_ue,
     ogs_nas_5gs_mobile_identity_suci_t *mobile_identity_suci,
     uint16_t mobile_identity_suci_length)
@@ -545,12 +555,143 @@ void test_ue_set_mobile_identity_suci(test_ue_t *test_ue,
     test_ue->imsi = ogs_id_get_value(test_ue->supi);
 }
 
+test_ue_t *test_ue_add_by_suci(
+    ogs_nas_5gs_mobile_identity_suci_t *mobile_identity_suci,
+    uint16_t mobile_identity_suci_length)
+{
+    test_ue_t *test_ue = NULL;
+
+    ogs_assert(mobile_identity_suci);
+    ogs_assert(mobile_identity_suci_length);
+
+    ogs_pool_alloc(&test_ue_pool, &test_ue);
+    ogs_assert(test_ue);
+    memset(test_ue, 0, sizeof *test_ue);
+
+    memcpy(&test_ue->e_tai, &test_self()->e_tai, sizeof(ogs_eps_tai_t));
+    memcpy(&test_ue->e_cgi, &test_self()->e_cgi, sizeof(ogs_e_cgi_t));
+
+    ogs_nas_from_plmn_id(
+            &mobile_identity_suci->nas_plmn_id, &test_ue->e_tai.plmn_id);
+
+    test_ue_set_mobile_identity_suci(
+            test_ue, mobile_identity_suci, mobile_identity_suci_length);
+
+    ogs_list_add(&self.test_ue_list, test_ue);
+
+    return test_ue;
+}
+
 void test_ue_remove(test_ue_t *test_ue)
 {
+    ogs_assert(test_ue);
+
+    ogs_list_remove(&self.test_ue_list, test_ue);
+
     if (test_ue->suci)
         ogs_free(test_ue->suci);
     if (test_ue->supi)
         ogs_free(test_ue->supi);
     if (test_ue->imsi)
         ogs_free(test_ue->imsi);
+
+    test_sess_remove_all(test_ue);
+
+    ogs_pool_free(&test_ue_pool, test_ue);
+}
+
+void test_ue_remove_all(void)
+{
+    test_ue_t *test_ue = NULL, *next = NULL;;
+
+    ogs_list_for_each_safe(&self.test_ue_list, next, test_ue)
+        test_ue_remove(test_ue);
+}
+
+test_sess_t *test_sess_add_by_apn(test_ue_t *test_ue, char *apn)
+{
+    test_sess_t *sess = NULL;
+
+    ogs_assert(test_ue);
+    ogs_assert(apn);
+
+    ogs_pool_alloc(&test_sess_pool, &sess);
+    ogs_assert(sess);
+    memset(sess, 0, sizeof *sess);
+
+    sess->apn = ogs_strdup(apn);
+    ogs_assert(sess->apn);
+    sess->pti = 1; /* Default PTI : 1 */
+
+    test_bearer_add(sess); /* Add default bearer */
+
+    sess->test_ue = test_ue;
+
+    ogs_list_add(&test_ue->sess_list, sess);
+
+    return sess;
+}
+
+void test_sess_remove(test_sess_t *sess)
+{
+    test_ue_t *test_ue = NULL;
+
+    ogs_assert(sess);
+    test_ue = sess->test_ue;
+    ogs_assert(test_ue);
+
+    ogs_list_remove(&test_ue->sess_list, sess);
+
+    if (sess->dnn)
+        ogs_free(sess->dnn);
+
+    test_bearer_remove_all(sess);
+
+    ogs_pool_free(&test_sess_pool, sess);
+}
+
+void test_sess_remove_all(test_ue_t *test_ue)
+{
+    test_sess_t *sess = NULL, *next = NULL;;
+
+    ogs_assert(test_ue);
+
+    ogs_list_for_each_safe(&test_ue->sess_list, next, sess)
+        test_sess_remove(sess);
+}
+
+test_bearer_t *test_bearer_add(test_sess_t *sess)
+{
+    test_bearer_t *bearer = NULL;
+
+    ogs_assert(sess);
+
+    ogs_pool_alloc(&test_bearer_pool, &bearer);
+    ogs_assert(bearer);
+    memset(bearer, 0, sizeof *bearer);
+
+    bearer->sess = sess;
+
+    ogs_list_add(&sess->bearer_list, bearer);
+
+    return bearer;
+}
+
+void test_bearer_remove(test_bearer_t *bearer)
+{
+    ogs_assert(bearer);
+    ogs_assert(bearer->sess);
+
+    ogs_list_remove(&bearer->sess->bearer_list, bearer);
+
+    ogs_pool_free(&test_bearer_pool, bearer);
+}
+
+void test_bearer_remove_all(test_sess_t *sess)
+{
+    test_bearer_t *bearer = NULL, *next_bearer = NULL;
+
+    ogs_assert(sess);
+    ogs_list_for_each_safe(&sess->bearer_list, next_bearer, bearer)
+        test_bearer_remove(bearer);
 }

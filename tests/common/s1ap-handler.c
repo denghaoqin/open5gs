@@ -19,8 +19,7 @@
 
 #include "test-common.h"
 
-void tests1ap_handle_s1_setup_response(
-        test_ue_t *test_ue, ogs_s1ap_message_t *message)
+void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message)
 {
     char buf[OGS_ADDRSTRLEN];
     int i, j;
@@ -30,7 +29,6 @@ void tests1ap_handle_s1_setup_response(
 
     S1AP_S1SetupResponseIEs_t *ie = NULL;
 
-    ogs_assert(test_ue);
     ogs_assert(message);
 
     successfulOutcome = message->choice.successfulOutcome;

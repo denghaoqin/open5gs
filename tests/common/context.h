@@ -55,6 +55,9 @@ typedef struct test_context_s {
         ogs_eps_tai2_list_t list2;
     } e_served_tai[OGS_MAX_NUM_OF_SERVED_TAI];
 
+    ogs_eps_tai_t e_tai;
+    ogs_e_cgi_t e_cgi;
+
     /* Served 5GC TAI */
     uint8_t num_of_nr_served_tai;
     struct {
@@ -64,6 +67,8 @@ typedef struct test_context_s {
 
     ogs_5gs_tai_t nr_tai;
     ogs_nr_cgi_t nr_cgi;
+
+    ogs_list_t      test_ue_list;
 } test_context_t;
 
 typedef struct test_sess_s test_sess_t;
@@ -138,6 +143,8 @@ typedef struct test_ul_nas_transport_param_s {
 } __attribute__ ((packed)) test_ul_nas_transport_param_t;
 
 typedef struct test_ue_s {
+    ogs_lnode_t     lnode;          /**< A node of list_t */
+
     uint32_t ran_ue_ngap_id; /* gNB-UE-NGAP-ID received from gNB */
     uint64_t amf_ue_ngap_id; /* AMF-UE-NGAP-ID received from AMF */
     uint32_t enb_ue_s1ap_id; /* eNB-UE-S1AP-ID received from eNB */
@@ -225,14 +232,21 @@ typedef struct test_ue_s {
     uint16_t pdu_session_reactivation_result;
 
     test_sess_t *sess;
+
+    ogs_list_t sess_list;
 } test_ue_t;
 
 typedef struct test_sess_s {
+    ogs_lnode_t     lnode;          /**< A node of list_t */
+
     uint8_t psi;
 
     uint8_t pti;
     uint8_t pdu_session_type;
-    char *dnn;
+    union {
+        char *dnn;
+        char *apn;
+    };
 
     ogs_ip_t ue_ip;
     ogs_ip_t upf_n3_ip;
@@ -244,8 +258,19 @@ typedef struct test_sess_s {
 
     test_ul_nas_transport_param_t ul_nas_transport_param;
 
+    ogs_list_t bearer_list;
+
     test_ue_t *test_ue;
 } test_sess_t;
+
+typedef struct test_bearer_s {
+    ogs_lnode_t     lnode;          /**< A node of list_t */
+
+    uint8_t         qfi;            /* 5GC */
+    uint8_t         ebi;            /* EPC */
+
+    test_sess_t     *sess;
+} test_bearer_t;
 
 void test_context_init(void);
 void test_context_final(void);
@@ -253,12 +278,25 @@ test_context_t *test_self(void);
 
 int test_context_parse_config(void);
 
-void test_ue_set_mobile_identity(test_ue_t *test_ue,
-        ogs_nas_5gs_mobile_identity_t *mobile_identity);
 void test_ue_set_mobile_identity_suci(test_ue_t *test_ue,
     ogs_nas_5gs_mobile_identity_suci_t *mobile_identity_suci,
     uint16_t mobile_identity_suci_length);
+
+test_ue_t *test_ue_add_by_suci(
+    ogs_nas_5gs_mobile_identity_suci_t *mobile_identity_suci,
+    uint16_t mobile_identity_suci_length);
 void test_ue_remove(test_ue_t *test_ue);
+void test_ue_remove_all(void);
+
+test_sess_t *test_sess_add_by_psi(test_ue_t *test_ue, uint8_t psi);
+test_sess_t *test_sess_add_by_apn(test_ue_t *test_ue, char *apn);
+void test_sess_remove(test_sess_t *sess);
+void test_sess_remove_all(test_ue_t *test_ue);
+
+test_bearer_t *test_bearer_add(test_sess_t *sess);
+test_bearer_t *test_qos_flow_add(test_sess_t *sess);
+void test_bearer_remove(test_bearer_t *bearer);
+void test_bearer_remove_all(test_sess_t *sess);
 
 #ifdef __cplusplus
 }

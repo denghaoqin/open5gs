@@ -29,7 +29,6 @@ void tests1ap_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
     S1AP_SuccessfulOutcome_t *successfulOutcome = NULL;
     S1AP_UnsuccessfulOutcome_t *unsuccessfulOutcome = NULL;
 
-    ogs_assert(test_ue);
     ogs_assert(pkbuf);
 
     rv = ogs_s1ap_decode(&message, pkbuf);
@@ -72,7 +71,7 @@ void tests1ap_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
 
         switch (successfulOutcome->procedureCode) {
         case S1AP_ProcedureCode_id_S1Setup:
-            tests1ap_handle_s1_setup_response(test_ue, pdu);
+            tests1ap_handle_s1_setup_response(pdu);
             break;
         default:
             ogs_error("Not implemented(choice:%d, proc:%d)",

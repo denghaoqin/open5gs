@@ -23,7 +23,6 @@ ogs_pkbuf_t *testemm_build_attach_request(
         test_ue_t *test_ue, ogs_pkbuf_t *nasbuf)
 {
     int i;
-    test_sess_t *sess = NULL;
     uint16_t psimask = 0;
 
     ogs_nas_eps_message_t message;
@@ -40,8 +39,6 @@ ogs_pkbuf_t *testemm_build_attach_request(
         &attach_request->esm_message_container;
 
     ogs_assert(test_ue);
-    sess = test_ue->sess;
-    ogs_assert(sess);
     ogs_assert(nasbuf);
 
     memset(&message, 0, sizeof(message));

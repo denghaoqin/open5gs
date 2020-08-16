@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *test_sess);
+ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess);
 
 #ifdef __cplusplus
 }

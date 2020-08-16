@@ -19,7 +19,7 @@
 
 #include "test-common.h"
 
-ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *test_sess)
+ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess)
 {
     ogs_nas_eps_message_t message;
     ogs_nas_eps_pdn_connectivity_request_t *pdn_connectivity_request =
@@ -35,15 +35,15 @@ ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *test_sess)
     test_ue_t *test_ue = NULL;
     ogs_pkbuf_t *pkbuf = NULL;
 
-    ogs_assert(test_sess);
-    test_ue = test_sess;
+    ogs_assert(sess);
+    test_ue = sess->test_ue;
     ogs_assert(test_ue);
 
     memset(&message, 0, sizeof(message));
 
     message.esm.h.eps_bearer_identity = 0;
     message.esm.h.protocol_discriminator = OGS_NAS_PROTOCOL_DISCRIMINATOR_ESM;
-    message.esm.h.procedure_transaction_identity = test_sess->pti;
+    message.esm.h.procedure_transaction_identity = sess->pti;
     message.esm.h.message_type = OGS_NAS_EPS_PDN_CONNECTIVITY_REQUEST;
 
     request_type->type = OGS_NAS_EPS_PDN_TYPE_IPV4V6;

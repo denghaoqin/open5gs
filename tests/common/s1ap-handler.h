@@ -24,8 +24,7 @@
 extern "C" {
 #endif
 
-void tests1ap_handle_s1_setup_response(
-        test_ue_t *test_ue, ogs_s1ap_message_t *message);
+void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message);
 
 #ifdef __cplusplus
 }
