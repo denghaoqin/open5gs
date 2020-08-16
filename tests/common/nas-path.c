@@ -127,6 +127,10 @@ void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
     case OGS_NAS_EPS_IDENTITY_REQUEST:
         testemm_handle_identity_request(test_ue, &message.emm.identity_request);
         break;
+    case OGS_NAS_EPS_AUTHENTICATION_REQUEST:
+        testemm_handle_authentication_request(test_ue,
+                &message.emm.authentication_request);
+        break;
     default:
         ogs_error("Unknown message[%d]", message.emm.h.message_type);
         break;

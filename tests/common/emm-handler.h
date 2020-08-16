@@ -26,6 +26,8 @@ extern "C" {
 
 void testemm_handle_identity_request(test_ue_t *test_ue,
         ogs_nas_eps_identity_request_t *identity_request);
+void testemm_handle_authentication_request(test_ue_t *test_ue,
+        ogs_nas_eps_authentication_request_t *authentication_request);
 
 #ifdef __cplusplus
 }
