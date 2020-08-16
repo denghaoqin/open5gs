@@ -27,6 +27,7 @@ extern "C" {
 ogs_pkbuf_t *testemm_build_attach_request(
         test_ue_t *test_ue, ogs_pkbuf_t *esmbuf);
 ogs_pkbuf_t *testemm_build_identity_response(test_ue_t *test_ue);
+ogs_pkbuf_t *testemm_build_authentication_response(test_ue_t *test_ue);
 
 #ifdef __cplusplus
 }

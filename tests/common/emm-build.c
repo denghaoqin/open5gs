@@ -146,3 +146,53 @@ ogs_pkbuf_t *testemm_build_identity_response(test_ue_t *test_ue)
 
     return ogs_nas_eps_plain_encode(&message);
 }
+
+ogs_pkbuf_t *testemm_build_authentication_response(test_ue_t *test_ue)
+{
+    ogs_nas_eps_message_t message;
+    ogs_pkbuf_t *pkbuf = NULL;
+    ogs_nas_eps_authentication_response_t *authentication_response =
+            &message.emm.authentication_response;
+    ogs_nas_authentication_response_parameter_t
+        *authentication_response_parameter =
+            &authentication_response->authentication_response_parameter;
+
+    uint8_t ik[OGS_KEY_LEN];
+    uint8_t ck[OGS_KEY_LEN];
+    uint8_t ak[OGS_AK_LEN];
+    uint8_t res[OGS_MAX_RES_LEN];
+    uint8_t res_star[OGS_MAX_RES_LEN];
+    uint8_t kausf[OGS_SHA256_DIGEST_SIZE];
+    uint8_t kseaf[OGS_SHA256_DIGEST_SIZE];
+    char *serving_network_name;
+
+    ogs_assert(test_ue);
+
+    memset(&message, 0, sizeof(message));
+    message.emm.h.protocol_discriminator = OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM;
+    message.emm.h.message_type = OGS_NAS_EPS_AUTHENTICATION_RESPONSE;
+
+    milenage_f2345(test_ue->opc, test_ue->k, test_ue->rand,
+            res, ck, ik, ak, NULL);
+    serving_network_name =
+        ogs_serving_network_name_from_plmn_id(&test_self()->nr_tai.plmn_id);
+    ogs_kdf_xres_star(
+            ck, ik,
+            serving_network_name, test_ue->rand, res, 8,
+            authentication_response_parameter->res);
+
+    authentication_response_parameter->length = OGS_AUTN_LEN;
+
+    memcpy(res_star, authentication_response_parameter->res,
+            authentication_response_parameter->length);
+    ogs_kdf_kausf(ck, ik, serving_network_name, test_ue->autn, kausf);
+    ogs_kdf_kseaf(serving_network_name, kausf, kseaf);
+#if 0
+    ogs_kdf_kamf(test_ue->supi, test_ue->abba, test_ue->abba_len,
+                kseaf, test_ue->kamf);
+#endif
+
+    ogs_free(serving_network_name);
+
+    return ogs_nas_eps_plain_encode(&message);
+}

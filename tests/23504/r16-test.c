@@ -199,6 +199,15 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     tests1ap_recv(test_ue, recvbuf);
 
+    /* Send Authentication response */
+    emmbuf = testemm_build_authentication_response(test_ue);
+    ABTS_PTR_NOTNULL(tc, emmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, emmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    ogs_msleep(300);
 #if 0
     /* Send Authentication Response */
     rv = tests1ap_build_authentication_response(&sendbuf, msgindex);
