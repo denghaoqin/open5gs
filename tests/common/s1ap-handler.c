@@ -38,3 +38,47 @@ void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message)
 
     ogs_debug("S1 setup response");
 }
+
+void tests1ap_handle_downlink_nas_transport(
+        test_ue_t *test_ue, ogs_s1ap_message_t *message)
+{
+    int i;
+    char buf[OGS_ADDRSTRLEN];
+
+    S1AP_S1AP_PDU_t pdu;
+    S1AP_InitiatingMessage_t *initiatingMessage = NULL;
+    S1AP_DownlinkNASTransport_t *DownlinkNASTransport = NULL;
+
+    S1AP_DownlinkNASTransport_IEs_t *ie = NULL;
+    S1AP_MME_UE_S1AP_ID_t *MME_UE_S1AP_ID = NULL;
+    S1AP_NAS_PDU_t *NAS_PDU = NULL;
+
+    ogs_assert(test_ue);
+    ogs_assert(message);
+
+    initiatingMessage = message->choice.initiatingMessage;
+    ogs_assert(initiatingMessage);
+    DownlinkNASTransport =
+        &initiatingMessage->value.choice.DownlinkNASTransport;
+    ogs_assert(DownlinkNASTransport);
+
+    for (i = 0; i < DownlinkNASTransport->protocolIEs.list.count; i++) {
+        ie = DownlinkNASTransport->protocolIEs.list.array[i];
+        switch (ie->id) {
+        case S1AP_ProtocolIE_ID_id_MME_UE_S1AP_ID:
+            MME_UE_S1AP_ID = &ie->value.choice.MME_UE_S1AP_ID;
+            break;
+        case S1AP_ProtocolIE_ID_id_NAS_PDU:
+            NAS_PDU = &ie->value.choice.NAS_PDU;
+            break;
+        default:
+            break;
+        }
+    }
+
+    ogs_assert(MME_UE_S1AP_ID);
+    test_ue->mme_ue_s1ap_id = *MME_UE_S1AP_ID;
+
+    if (NAS_PDU)
+        tests1ap_send_to_nas(test_ue, NAS_PDU);
+}

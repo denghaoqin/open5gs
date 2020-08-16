@@ -63,6 +63,7 @@ extern "C" {
 #include "common/s1ap-path.h"
 
 #include "common/emm-build.h"
+#include "common/emm-handler.h"
 #include "common/esm-build.h"
 
 #undef OGS_LOG_DOMAIN

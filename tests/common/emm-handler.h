@@ -17,19 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_S1AP_HANDLE_H
-#define TEST_S1AP_HANDLE_H
+#ifndef TEST_EMM_HANDLE_H
+#define TEST_EMM_HANDLE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message);
-void tests1ap_handle_downlink_nas_transport(
-        test_ue_t *test_ue, ogs_s1ap_message_t *message);
+void testemm_handle_identity_request(test_ue_t *test_ue,
+        ogs_nas_eps_identity_request_t *identity_request);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TEST_S1AP_HANDLE_H */
+#endif /* TEST_EMM_HANDLE_H */

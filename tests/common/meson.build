@@ -39,8 +39,9 @@ libtestcommon_sources = files('''
     s1ap-handler.c
     s1ap-path.c
 
-    esm-build.c
     emm-build.c
+    emm-handler.c
+    esm-build.c
 
     nas-path.c
     nas-encoder.c

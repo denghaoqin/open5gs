@@ -181,13 +181,21 @@ static void test1_func(abts_case *tc, void *data)
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
-    ogs_msleep(300);
-#if 0
     /* Receive Identity Request */
     recvbuf = testenb_s1ap_read(s1ap);
     ABTS_PTR_NOTNULL(tc, recvbuf);
-    ogs_pkbuf_free(recvbuf);
+    tests1ap_recv(test_ue, recvbuf);
 
+    /* Send Identity response */
+    emmbuf = testemm_build_identity_response(test_ue);
+    ABTS_PTR_NOTNULL(tc, emmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, emmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    ogs_msleep(300);
+#if 0
     /* Send Identity Response */
     rv = tests1ap_build_identity_response(&sendbuf, msgindex);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);

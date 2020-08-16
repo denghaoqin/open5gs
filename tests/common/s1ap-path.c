@@ -44,9 +44,7 @@ void tests1ap_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
 
         switch (initiatingMessage->procedureCode) {
         case S1AP_ProcedureCode_id_downlinkNASTransport:
-#if 0
             tests1ap_handle_downlink_nas_transport(test_ue, pdu);
-#endif
             break;
         case S1AP_ProcedureCode_id_InitialContextSetup:
 #if 0
@@ -101,13 +99,12 @@ void tests1ap_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
     ogs_pkbuf_free(pkbuf);
 }
 
-#if 0
 void tests1ap_send_to_nas(test_ue_t *test_ue, S1AP_NAS_PDU_t *nasPdu)
 {
-    ogs_nas_5gs_security_header_t *sh = NULL;
+    ogs_nas_eps_security_header_t *sh = NULL;
     ogs_nas_security_header_type_t security_header_type;
 
-    ogs_nas_5gmm_header_t *h = NULL;
+    ogs_nas_emm_header_t *h = NULL;
     ogs_pkbuf_t *nasbuf = NULL;
 
     ogs_assert(test_ue);
@@ -119,7 +116,7 @@ void tests1ap_send_to_nas(test_ue_t *test_ue, S1AP_NAS_PDU_t *nasPdu)
     ogs_pkbuf_reserve(nasbuf, OGS_NAS_HEADROOM);
     ogs_pkbuf_put_data(nasbuf, nasPdu->buf, nasPdu->size);
 
-    sh = (ogs_nas_5gs_security_header_t *)nasbuf->data;
+    sh = (ogs_nas_eps_security_header_t *)nasbuf->data;
     ogs_assert(sh);
 
     memset(&security_header_type, 0, sizeof(ogs_nas_security_header_type_t));
@@ -128,23 +125,23 @@ void tests1ap_send_to_nas(test_ue_t *test_ue, S1AP_NAS_PDU_t *nasPdu)
         break;
     case OGS_NAS_SECURITY_HEADER_INTEGRITY_PROTECTED:
         security_header_type.integrity_protected = 1;
-        ogs_pkbuf_pull(nasbuf, 7);
+        ogs_pkbuf_pull(nasbuf, 6);
         break;
     case OGS_NAS_SECURITY_HEADER_INTEGRITY_PROTECTED_AND_CIPHERED:
         security_header_type.integrity_protected = 1;
         security_header_type.ciphered = 1;
-        ogs_pkbuf_pull(nasbuf, 7);
+        ogs_pkbuf_pull(nasbuf, 6);
         break;
     case OGS_NAS_SECURITY_HEADER_INTEGRITY_PROTECTED_AND_NEW_SECURITY_CONTEXT:
         security_header_type.integrity_protected = 1;
         security_header_type.new_security_context = 1;
-        ogs_pkbuf_pull(nasbuf, 7);
+        ogs_pkbuf_pull(nasbuf, 6);
         break;
     case OGS_NAS_SECURITY_HEADER_INTEGRITY_PROTECTED_AND_CIPHTERD_WITH_NEW_INTEGRITY_CONTEXT:
         security_header_type.integrity_protected = 1;
         security_header_type.ciphered = 1;
         security_header_type.new_security_context = 1;
-        ogs_pkbuf_pull(nasbuf, 7);
+        ogs_pkbuf_pull(nasbuf, 6);
         break;
     default:
         ogs_error("Not implemented(security header type:0x%x)",
@@ -152,33 +149,35 @@ void tests1ap_send_to_nas(test_ue_t *test_ue, S1AP_NAS_PDU_t *nasPdu)
         ogs_assert_if_reached();
     }
 
-    h = (ogs_nas_5gmm_header_t *)nasbuf->data;
+    h = (ogs_nas_emm_header_t *)nasbuf->data;
     ogs_assert(h);
 
-    if (h->message_type == OGS_NAS_5GS_SECURITY_MODE_COMMAND) {
-        ogs_nas_5gs_message_t message;
+    if (h->message_type == OGS_NAS_EPS_SECURITY_MODE_COMMAND) {
+        ogs_nas_eps_message_t message;
         int rv;
 
-        rv = ogs_nas_5gmm_decode(&message, nasbuf);
+        rv = ogs_nas_emm_decode(&message, nasbuf);
         ogs_assert(rv == OGS_OK);
 
-        testgmm_handle_security_mode_command(test_ue,
-                &message.gmm.security_mode_command);
+#if 0
+        testemm_handle_security_mode_command(test_ue,
+                &message.emm.security_mode_command);
+#endif
     }
 
-    if (test_nas_5gs_security_decode(test_ue,
+#if 0
+    if (test_nas_eps_security_decode(test_ue,
             security_header_type, nasbuf) != OGS_OK) {
         ogs_error("nas_eps_security_decode failed()");
         ogs_assert_if_reached();
     }
+#endif
 
-    if (h->extended_protocol_discriminator ==
-            OGS_NAS_EXTENDED_PROTOCOL_DISCRIMINATOR_5GMM) {
-        testgmm_recv(test_ue, nasbuf);
+    if (h->protocol_discriminator == OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM) {
+        testemm_recv(test_ue, nasbuf);
     } else {
         ogs_error("Unknown NAS Protocol discriminator 0x%02x",
-                  h->extended_protocol_discriminator);
+                  h->protocol_discriminator);
         ogs_assert_if_reached();
     }
 }
-#endif

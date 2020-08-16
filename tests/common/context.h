@@ -224,12 +224,14 @@ typedef struct test_ue_s {
     int             mac_failed;
 
     test_registration_request_param_t registration_request_param;
-    test_attach_request_param_t attach_request_param;
     test_service_request_param_t service_request_param;
     uint8_t         gmm_message_type; /* Last received 5GMM message type */
 
     uint16_t pdu_session_status;
     uint16_t pdu_session_reactivation_result;
+
+    test_attach_request_param_t attach_request_param;
+    uint8_t         emm_message_type; /* Last received EMM message type */
 
     test_sess_t *sess;
 

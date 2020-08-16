@@ -17,19 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_S1AP_HANDLE_H
-#define TEST_S1AP_HANDLE_H
+#include "test-common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void testemm_handle_identity_request(test_ue_t *test_ue,
+        ogs_nas_eps_identity_request_t *identity_request)
+{
+    ogs_assert(test_ue);
+    ogs_assert(identity_request);
 
-void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message);
-void tests1ap_handle_downlink_nas_transport(
-        test_ue_t *test_ue, ogs_s1ap_message_t *message);
-
-#ifdef __cplusplus
+    switch (identity_request->identity_type.type) {
+    case OGS_NAS_IDENTITY_TYPE_2_IMSI:
+        break;
+    default:
+        ogs_error("Not implemented [%d]",
+                identity_request->identity_type.type);
+        break;
+    }
 }
-#endif
-
-#endif /* TEST_S1AP_HANDLE_H */

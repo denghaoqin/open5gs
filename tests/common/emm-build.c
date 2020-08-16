@@ -20,7 +20,7 @@
 #include "test-common.h"
 
 ogs_pkbuf_t *testemm_build_attach_request(
-        test_ue_t *test_ue, ogs_pkbuf_t *nasbuf)
+        test_ue_t *test_ue, ogs_pkbuf_t *esmbuf)
 {
     int i;
     uint16_t psimask = 0;
@@ -39,7 +39,7 @@ ogs_pkbuf_t *testemm_build_attach_request(
         &attach_request->esm_message_container;
 
     ogs_assert(test_ue);
-    ogs_assert(nasbuf);
+    ogs_assert(esmbuf);
 
     memset(&message, 0, sizeof(message));
     if (test_ue->attach_request_param.integrity_protected) {
@@ -56,9 +56,9 @@ ogs_pkbuf_t *testemm_build_attach_request(
             OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM;
     message.emm.h.message_type = OGS_NAS_EPS_ATTACH_REQUEST;
 
-    esm_message_container->length = nasbuf->len;
-    esm_message_container->buffer = nasbuf->data;
-    ogs_pkbuf_free(nasbuf);
+    esm_message_container->length = esmbuf->len;
+    esm_message_container->buffer = esmbuf->data;
+    ogs_pkbuf_free(esmbuf);
 
     memcpy(eps_attach_type, &test_ue->nas.data, sizeof(*eps_attach_type));
 
@@ -122,4 +122,27 @@ ogs_pkbuf_t *testemm_build_attach_request(
 #else
     return ogs_nas_eps_plain_encode(&message);
 #endif
+}
+
+ogs_pkbuf_t *testemm_build_identity_response(test_ue_t *test_ue)
+{
+    ogs_nas_eps_message_t message;
+    ogs_pkbuf_t *pkbuf = NULL;
+    ogs_nas_eps_identity_response_t *identity_response =
+            &message.emm.identity_response;
+
+    ogs_assert(test_ue);
+
+    memset(&message, 0, sizeof(message));
+    message.emm.h.protocol_discriminator =
+            OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM;
+    message.emm.h.message_type = OGS_NAS_EPS_IDENTITY_RESPONSE;
+
+    identity_response->mobile_identity.length =
+            sizeof(ogs_nas_mobile_identity_imsi_t);
+    memcpy(&identity_response->mobile_identity.imsi,
+            &test_ue->mobile_identity_imsi,
+            identity_response->mobile_identity.length);
+
+    return ogs_nas_eps_plain_encode(&message);
 }
