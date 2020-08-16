@@ -42,7 +42,10 @@ void testemm_handle_authentication_request(test_ue_t *test_ue,
         NULL;
     ogs_nas_authentication_parameter_autn_t *authentication_parameter_autn =
         NULL;
-    ogs_nas_key_set_identifier_t *ngksi = NULL;
+    ogs_nas_key_set_identifier_t *ksi = NULL;
+
+    char *_kasme_string =
+        "1c958b6c0cff78ff ba970d6673a4a4d0 0d0469d18a410987 29e75f3b3fa98902";
 
     ogs_assert(test_ue);
     ogs_assert(authentication_request);
@@ -51,10 +54,41 @@ void testemm_handle_authentication_request(test_ue_t *test_ue,
         authentication_parameter_rand;
     authentication_parameter_autn = &authentication_request->
         authentication_parameter_autn;
-    ngksi = &authentication_request->nas_key_set_identifierasme;
+    ksi = &authentication_request->nas_key_set_identifierasme;
 
-    test_ue->nas.ksi = ngksi->value;
+    test_ue->nas.ksi = ksi->value;
 
     memcpy(test_ue->rand, authentication_parameter_rand->rand, OGS_RAND_LEN);
     memcpy(test_ue->autn, authentication_parameter_autn->autn, OGS_AUTN_LEN);
+
+    OGS_HEX(_kasme_string, strlen(_kasme_string), test_ue->kasme);
+}
+
+void testemm_handle_security_mode_command(test_ue_t *test_ue,
+        ogs_nas_eps_security_mode_command_t *security_mode_command)
+{
+    ogs_nas_security_algorithms_t *selected_nas_security_algorithms = NULL;
+    ogs_nas_key_set_identifier_t *ksi = NULL;
+
+    ogs_assert(test_ue);
+    ogs_assert(security_mode_command);
+
+    selected_nas_security_algorithms =
+        &security_mode_command->selected_nas_security_algorithms;
+    ksi = &security_mode_command->nas_key_set_identifier;
+
+    test_ue->selected_enc_algorithm =
+        selected_nas_security_algorithms->type_of_ciphering_algorithm;
+    test_ue->selected_int_algorithm =
+        selected_nas_security_algorithms->
+            type_of_integrity_protection_algorithm;
+
+    ogs_kdf_nas_eps(OGS_KDF_NAS_INT_ALG, test_ue->selected_int_algorithm,
+        test_ue->kasme, test_ue->knas_int);
+    ogs_kdf_nas_eps(OGS_KDF_NAS_ENC_ALG, test_ue->selected_enc_algorithm,
+        test_ue->kasme, test_ue->knas_enc);
+
+    test_ue->nas.ksi = ksi->value;
+
+    test_ue->security_context_available = 1;
 }

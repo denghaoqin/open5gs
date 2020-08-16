@@ -159,19 +159,15 @@ void tests1ap_send_to_nas(test_ue_t *test_ue, S1AP_NAS_PDU_t *nasPdu)
         rv = ogs_nas_emm_decode(&message, nasbuf);
         ogs_assert(rv == OGS_OK);
 
-#if 0
         testemm_handle_security_mode_command(test_ue,
                 &message.emm.security_mode_command);
-#endif
     }
 
-#if 0
     if (test_nas_eps_security_decode(test_ue,
             security_header_type, nasbuf) != OGS_OK) {
         ogs_error("nas_eps_security_decode failed()");
         ogs_assert_if_reached();
     }
-#endif
 
     if (h->protocol_discriminator == OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM) {
         testemm_recv(test_ue, nasbuf);

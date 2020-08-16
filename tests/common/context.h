@@ -173,6 +173,7 @@ typedef struct test_ue_s {
     uint8_t abba[OGS_NAS_MAX_ABBA_LEN];
     uint8_t abba_len;
     uint8_t kamf[OGS_SHA256_DIGEST_SIZE];
+    uint8_t kasme[OGS_SHA256_DIGEST_SIZE];
 
     struct {
         int access_type; /* 3GPP or Non-3GPP */

@@ -131,6 +131,8 @@ void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
         testemm_handle_authentication_request(test_ue,
                 &message.emm.authentication_request);
         break;
+    case OGS_NAS_EPS_SECURITY_MODE_COMMAND:
+        break;
     default:
         ogs_error("Unknown message[%d]", message.emm.h.message_type);
         break;
