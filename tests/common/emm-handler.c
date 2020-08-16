@@ -44,9 +44,6 @@ void testemm_handle_authentication_request(test_ue_t *test_ue,
         NULL;
     ogs_nas_key_set_identifier_t *ksi = NULL;
 
-    char *_kasme_string =
-        "1c958b6c0cff78ff ba970d6673a4a4d0 0d0469d18a410987 29e75f3b3fa98902";
-
     ogs_assert(test_ue);
     ogs_assert(authentication_request);
 
@@ -60,8 +57,6 @@ void testemm_handle_authentication_request(test_ue_t *test_ue,
 
     memcpy(test_ue->rand, authentication_parameter_rand->rand, OGS_RAND_LEN);
     memcpy(test_ue->autn, authentication_parameter_autn->autn, OGS_AUTN_LEN);
-
-    OGS_HEX(_kasme_string, strlen(_kasme_string), test_ue->kasme);
 }
 
 void testemm_handle_security_mode_command(test_ue_t *test_ue,

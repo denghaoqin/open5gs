@@ -160,7 +160,12 @@ ogs_pkbuf_t *testemm_build_authentication_response(test_ue_t *test_ue)
     uint8_t ik[OGS_KEY_LEN];
     uint8_t ck[OGS_KEY_LEN];
     uint8_t ak[OGS_AK_LEN];
+    uint8_t sqn[OGS_SQN_LEN];
     uint8_t res[OGS_MAX_RES_LEN];
+
+    uint8_t kasme[32];
+
+    int i;
 
     ogs_assert(test_ue);
 
@@ -170,6 +175,11 @@ ogs_pkbuf_t *testemm_build_authentication_response(test_ue_t *test_ue)
 
     milenage_f2345(test_ue->opc, test_ue->k, test_ue->rand,
             res, ck, ik, ak, NULL);
+
+	for (i = 0; i < 6; i++)
+		sqn[i] = test_ue->autn[i] ^ ak[i];
+
+    ogs_auc_kasme(ck, ik, &test_ue->e_tai.plmn_id, sqn, ak, test_ue->kasme);
 
     authentication_response_parameter->length = 8;
     memcpy(authentication_response_parameter->res, res, 8);
