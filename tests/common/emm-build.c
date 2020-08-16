@@ -73,8 +73,10 @@ ogs_pkbuf_t *testemm_build_attach_request(
         eps_mobile_identity->guti.mme_code = test_ue->nas_eps_guti.mme_code;
         eps_mobile_identity->guti.m_tmsi = test_ue->nas_eps_guti.m_tmsi;
     } else {
-
-        ogs_fatal("asdfkljasdfasdf");
+        eps_mobile_identity->length =
+            sizeof(ogs_nas_mobile_identity_imsi_t);
+        memcpy(&eps_mobile_identity->imsi,
+                &test_ue->mobile_identity_imsi, eps_mobile_identity->length);
     }
 
     ue_network_capability->length = 7;

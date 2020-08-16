@@ -158,6 +158,7 @@ typedef struct test_ue_s {
     uint16_t mobile_identity_suci_length;
     ogs_nas_5gs_guti_t nas_guti;
     ogs_nas_eps_guti_t nas_eps_guti;
+    ogs_nas_mobile_identity_imsi_t mobile_identity_imsi;
 
     ogs_eps_tai_t e_tai;
     ogs_e_cgi_t e_cgi;
