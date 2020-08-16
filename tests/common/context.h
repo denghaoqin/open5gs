@@ -184,7 +184,7 @@ typedef struct test_ue_s {
             };
             ogs_nas_5gs_registration_type_t registration;
             ogs_nas_de_registration_type_t de_registration;
-            ogs_nas_eps_attach_type_t attach_type;
+            ogs_nas_eps_attach_type_t attach;
 
             uint8_t data;
         };

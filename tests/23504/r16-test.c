@@ -104,7 +104,11 @@ static void test1_func(abts_case *tc, void *data)
 
     test_ue = test_ue_add_by_suci(&mobile_identity_suci, 13);
     ogs_assert(test_ue);
+
     test_ue->e_cgi.cell_id = 0x200010;
+    test_ue->nas.ksi = OGS_NAS_KSI_NO_KEY_IS_AVAILABLE;
+    test_ue->nas.value = OGS_NAS_ATTACH_TYPE_COMBINED_EPS_IMSI_ATTACH;
+
     sess = test_sess_add_by_apn(test_ue, "internet");
     ogs_assert(sess);
 
@@ -166,6 +170,8 @@ static void test1_func(abts_case *tc, void *data)
     /* Send Attach Request */
     esmbuf = testesm_build_pdn_connectivity_request(sess);
     ABTS_PTR_NOTNULL(tc, esmbuf);
+
+    test_ue->attach_request_param.guti = 1;
 
     emmbuf = testemm_build_attach_request(test_ue, esmbuf);
     ABTS_PTR_NOTNULL(tc, emmbuf);
