@@ -24,8 +24,10 @@
 extern "C" {
 #endif
 
-void testesm_handle_pdn_connectivity_request(test_sess_t *sess,
-        ogs_nas_eps_pdn_connectivity_request_t *pdn_connectivity_request);
+void testesm_handle_activate_default_eps_bearer_context_request(
+        test_bearer_t *bearer,
+        ogs_nas_eps_activate_default_eps_bearer_context_request_t
+            *activate_default_eps_bearer_context_request);
 
 #ifdef __cplusplus
 }

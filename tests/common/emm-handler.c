@@ -92,13 +92,11 @@ void testemm_handle_attach_accept(test_ue_t *test_ue,
         ogs_nas_eps_attach_accept_t *attach_accept)
 {
     ogs_nas_eps_mobile_identity_t *guti = NULL;
-    ogs_nas_esm_message_container_t *esm_message_container = NULL;
 
     ogs_assert(test_ue);
     ogs_assert(attach_accept);
 
     guti = &attach_accept->guti;
-    esm_message_container = &attach_accept->esm_message_container;
 
     memcpy(&test_ue->nas_eps_guti.nas_plmn_id,
             &guti->guti.nas_plmn_id, OGS_PLMN_ID_LEN);
@@ -106,4 +104,5 @@ void testemm_handle_attach_accept(test_ue_t *test_ue,
     test_ue->nas_eps_guti.mme_code = guti->guti.mme_code;
     test_ue->nas_eps_guti.m_tmsi = guti->guti.m_tmsi;
 
+    testemm_send_to_esm(test_ue, &attach_accept->esm_message_container);
 }

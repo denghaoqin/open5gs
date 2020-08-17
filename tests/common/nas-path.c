@@ -144,21 +144,26 @@ void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
     ogs_pkbuf_free(pkbuf);
 }
 
-void testesm_recv(test_sess_t *sess, ogs_pkbuf_t *pkbuf)
+void testesm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
 {
     int rv;
+    test_bearer_t *bearer = NULL;
     ogs_nas_eps_message_t message;
 
-    ogs_assert(sess);
+    ogs_assert(test_ue);
     ogs_assert(pkbuf);
 
     rv = ogs_nas_esm_decode(&message, pkbuf);
     ogs_assert(rv == OGS_OK);
 
+    bearer = test_bearer_find_by_ue_ebi(
+            test_ue, message.esm.h.eps_bearer_identity);
+    ogs_assert(bearer);
+
     switch (message.esm.h.message_type) {
-    case OGS_NAS_EPS_PDN_CONNECTIVITY_REQUEST:
-        testesm_handle_pdn_connectivity_request(sess,
-                &message.esm.pdn_connectivity_request);
+    case OGS_NAS_EPS_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_REQUEST:
+        testesm_handle_activate_default_eps_bearer_context_request(bearer,
+                &message.esm.activate_default_eps_bearer_context_request);
         break;
     default:
         ogs_error("Unknown message[%d]", message.esm.h.message_type);
@@ -168,12 +173,12 @@ void testesm_recv(test_sess_t *sess, ogs_pkbuf_t *pkbuf)
     ogs_pkbuf_free(pkbuf);
 }
 
-void testemm_send_to_esm(test_sess_t *sess,
+void testemm_send_to_esm(test_ue_t *test_ue,
     ogs_nas_esm_message_container_t *esm_message_container)
 {
     ogs_pkbuf_t *esmbuf = NULL;
 
-    ogs_assert(sess);
+    ogs_assert(test_ue);
     ogs_assert(esm_message_container);
     ogs_assert(esm_message_container->buffer);
 
@@ -181,5 +186,5 @@ void testemm_send_to_esm(test_sess_t *sess,
     ogs_pkbuf_put_data(esmbuf,
             esm_message_container->buffer, esm_message_container->length);
 
-    testesm_recv(sess, esmbuf);
+    testesm_recv(test_ue, esmbuf);
 }
