@@ -272,6 +272,11 @@ typedef struct test_bearer_s {
     uint8_t         qfi;            /* 5GC */
     uint8_t         ebi;            /* EPC */
 
+    uint32_t        sgw_s1u_teid;   /* SGW-S1U TEID */
+    ogs_ip_t        sgw_s1u_ip;     /* SGW-S1U IPv4/IPv6 */
+    uint32_t        enb_s1u_teid;   /* eNB-S1U TEID */
+    ogs_ip_t        enb_s1u_ip;     /* eNB-S1U IPv4/IPv6 */
+
     test_sess_t     *sess;
 } test_bearer_t;
 
@@ -300,6 +305,9 @@ test_bearer_t *test_bearer_add(test_sess_t *sess);
 test_bearer_t *test_qos_flow_add(test_sess_t *sess);
 void test_bearer_remove(test_bearer_t *bearer);
 void test_bearer_remove_all(test_sess_t *sess);
+
+test_bearer_t *test_bearer_find_by_sess_ebi(test_sess_t *sess, uint8_t ebi);
+test_bearer_t *test_bearer_find_by_ue_ebi(test_ue_t *test_ue, uint8_t ebi);
 
 #ifdef __cplusplus
 }

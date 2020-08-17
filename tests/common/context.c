@@ -720,3 +720,31 @@ void test_bearer_remove_all(test_sess_t *sess)
     ogs_list_for_each_safe(&sess->bearer_list, next_bearer, bearer)
         test_bearer_remove(bearer);
 }
+
+test_bearer_t *test_bearer_find_by_sess_ebi(test_sess_t *sess, uint8_t ebi)
+{
+    test_bearer_t *bearer = NULL;
+
+    ogs_assert(sess);
+
+    ogs_list_for_each(&sess->bearer_list, bearer)
+        if (ebi == bearer->ebi) return bearer;
+
+    return NULL;
+}
+
+test_bearer_t *test_bearer_find_by_ue_ebi(test_ue_t *test_ue, uint8_t ebi)
+{
+    test_sess_t *sess = NULL;
+    test_bearer_t *bearer = NULL;
+
+    ogs_assert(test_ue);
+
+    ogs_list_for_each(&test_ue->sess_list, sess) {
+        bearer = test_bearer_find_by_sess_ebi(sess, ebi);
+        if (bearer) return bearer;
+
+    }
+
+    return NULL;
+}

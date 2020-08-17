@@ -27,6 +27,8 @@ extern "C" {
 void tests1ap_handle_s1_setup_response(ogs_s1ap_message_t *message);
 void tests1ap_handle_downlink_nas_transport(
         test_ue_t *test_ue, ogs_s1ap_message_t *message);
+void tests1ap_handle_initial_context_setup_request(
+        test_ue_t *test_ue, ogs_s1ap_message_t *message);
 
 #ifdef __cplusplus
 }

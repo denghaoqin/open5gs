@@ -133,6 +133,9 @@ void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
         break;
     case OGS_NAS_EPS_SECURITY_MODE_COMMAND:
         break;
+    case OGS_NAS_EPS_ATTACH_ACCEPT:
+        testemm_handle_attach_accept(test_ue, &message.emm.attach_accept);
+        break;
     default:
         ogs_error("Unknown message[%d]", message.emm.h.message_type);
         break;
