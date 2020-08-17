@@ -55,3 +55,31 @@ ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess)
 
     return ogs_nas_eps_plain_encode(&message);
 }
+
+ogs_pkbuf_t *testesm_build_activate_default_eps_bearer_context_accept(
+        test_ue_t *test_ue)
+{
+    ogs_nas_eps_message_t message;
+    ogs_nas_eps_activate_default_eps_bearer_context_accept_t
+        *activate_default_eps_bearer_context_accept =
+            &message.esm.activate_default_eps_bearer_context_accept;
+
+    test_sess_t *sess = NULL;
+    test_bearer_t *bearer = NULL;
+    ogs_pkbuf_t *pkbuf = NULL;
+
+    ogs_assert(test_ue);
+    sess = ogs_list_first(&test_ue->sess_list);
+    ogs_assert(sess);
+    bearer = ogs_list_first(&sess->bearer_list);
+    ogs_assert(bearer);
+
+    memset(&message, 0, sizeof(message));
+
+    message.esm.h.eps_bearer_identity = bearer->ebi;
+    message.esm.h.protocol_discriminator = OGS_NAS_PROTOCOL_DISCRIMINATOR_ESM;
+    message.esm.h.message_type =
+        OGS_NAS_EPS_ACTIVATE_DEFAULT_EPS_BEARER_CONTEXT_ACCEPT;
+
+    return ogs_nas_eps_plain_encode(&message);
+}

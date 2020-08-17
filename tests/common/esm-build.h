@@ -25,6 +25,8 @@ extern "C" {
 #endif
 
 ogs_pkbuf_t *testesm_build_pdn_connectivity_request(test_sess_t *sess);
+ogs_pkbuf_t *testesm_build_activate_default_eps_bearer_context_accept(
+        test_ue_t *test_ue);
 
 #ifdef __cplusplus
 }

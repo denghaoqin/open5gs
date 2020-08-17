@@ -171,14 +171,12 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, collection);
 
     /* Send Attach Request */
-    esmbuf = testesm_build_pdn_connectivity_request(sess);
-    ABTS_PTR_NOTNULL(tc, esmbuf);
-
     test_ue->attach_request_param.guti = 1;
 
+    esmbuf = testesm_build_pdn_connectivity_request(sess);
+    ABTS_PTR_NOTNULL(tc, esmbuf);
     emmbuf = testemm_build_attach_request(test_ue, esmbuf);
     ABTS_PTR_NOTNULL(tc, emmbuf);
-
     sendbuf = test_s1ap_build_initial_ue_message(test_ue, emmbuf, false);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
     rv = testenb_s1ap_send(s1ap, sendbuf);
@@ -236,18 +234,13 @@ static void test1_func(abts_case *tc, void *data)
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
-    ogs_msleep(300);
-#if 0
-    /* Send Initial Context Setup Response */
-    rv = tests1ap_build_initial_context_setup_response(&sendbuf,
-            16777373, 1, 5, 1, "127.0.0.5");
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-    rv = testenb_s1ap_send(s1ap, sendbuf);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
-
     /* Send Attach Complete + Activate default EPS bearer cotext accept */
-    rv = tests1ap_build_attach_complete(&sendbuf, msgindex);
-    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+    esmbuf = testesm_build_activate_default_eps_bearer_context_accept(test_ue);
+    ABTS_PTR_NOTNULL(tc, esmbuf);
+    emmbuf = testemm_build_attach_complete(test_ue, esmbuf);
+    ABTS_PTR_NOTNULL(tc, emmbuf);
+    sendbuf = test_s1ap_build_uplink_nas_transport(test_ue, emmbuf);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
     rv = testenb_s1ap_send(s1ap, sendbuf);
     ABTS_INT_EQUAL(tc, OGS_OK, rv);
 
@@ -255,7 +248,6 @@ static void test1_func(abts_case *tc, void *data)
     recvbuf = testenb_s1ap_read(s1ap);
     ABTS_PTR_NOTNULL(tc, recvbuf);
     ogs_pkbuf_free(recvbuf);
-#endif
 
     /********** Remove Subscriber in Database */
     doc = BCON_NEW("imsi", BCON_UTF8(test_ue->imsi));

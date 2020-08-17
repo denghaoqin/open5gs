@@ -29,6 +29,8 @@ ogs_pkbuf_t *testemm_build_attach_request(
 ogs_pkbuf_t *testemm_build_identity_response(test_ue_t *test_ue);
 ogs_pkbuf_t *testemm_build_authentication_response(test_ue_t *test_ue);
 ogs_pkbuf_t *testemm_build_security_mode_complete(test_ue_t *test_ue);
+ogs_pkbuf_t *testemm_build_attach_complete(
+        test_ue_t *test_ue, ogs_pkbuf_t *esmbuf);
 
 #ifdef __cplusplus
 }

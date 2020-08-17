@@ -217,3 +217,31 @@ ogs_pkbuf_t *testemm_build_security_mode_complete(test_ue_t *test_ue)
 
     return test_nas_eps_security_encode(test_ue, &message);
 }
+
+ogs_pkbuf_t *testemm_build_attach_complete(
+        test_ue_t *test_ue, ogs_pkbuf_t *esmbuf)
+{
+    ogs_nas_eps_message_t message;
+    ogs_pkbuf_t *pkbuf = NULL;
+    ogs_nas_eps_attach_complete_t *attach_complete = &message.emm.attach_complete;
+
+    ogs_nas_esm_message_container_t *esm_message_container =
+        &attach_complete->esm_message_container;
+
+    ogs_assert(test_ue);
+    ogs_assert(esmbuf);
+
+    memset(&message, 0, sizeof(message));
+    message.h.security_header_type =
+        OGS_NAS_SECURITY_HEADER_INTEGRITY_PROTECTED_AND_CIPHTERD_WITH_NEW_INTEGRITY_CONTEXT;
+    message.h.protocol_discriminator = OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM;
+
+    message.emm.h.protocol_discriminator = OGS_NAS_PROTOCOL_DISCRIMINATOR_EMM;
+    message.emm.h.message_type = OGS_NAS_EPS_ATTACH_COMPLETE;
+
+    esm_message_container->length = esmbuf->len;
+    esm_message_container->buffer = esmbuf->data;
+    ogs_pkbuf_free(esmbuf);
+
+    return test_nas_eps_security_encode(test_ue, &message);
+}
