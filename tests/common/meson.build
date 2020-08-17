@@ -42,6 +42,7 @@ libtestcommon_sources = files('''
     emm-build.c
     emm-handler.c
     esm-build.c
+    esm-handler.c
 
     nas-path.c
     nas-encoder.c

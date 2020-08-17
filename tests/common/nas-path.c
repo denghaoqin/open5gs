@@ -143,3 +143,43 @@ void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf)
 
     ogs_pkbuf_free(pkbuf);
 }
+
+void testesm_recv(test_sess_t *sess, ogs_pkbuf_t *pkbuf)
+{
+    int rv;
+    ogs_nas_eps_message_t message;
+
+    ogs_assert(sess);
+    ogs_assert(pkbuf);
+
+    rv = ogs_nas_esm_decode(&message, pkbuf);
+    ogs_assert(rv == OGS_OK);
+
+    switch (message.esm.h.message_type) {
+    case OGS_NAS_EPS_PDN_CONNECTIVITY_REQUEST:
+        testesm_handle_pdn_connectivity_request(sess,
+                &message.esm.pdn_connectivity_request);
+        break;
+    default:
+        ogs_error("Unknown message[%d]", message.esm.h.message_type);
+        break;
+    }
+
+    ogs_pkbuf_free(pkbuf);
+}
+
+void testemm_send_to_esm(test_sess_t *sess,
+    ogs_nas_esm_message_container_t *esm_message_container)
+{
+    ogs_pkbuf_t *esmbuf = NULL;
+
+    ogs_assert(sess);
+    ogs_assert(esm_message_container);
+    ogs_assert(esm_message_container->buffer);
+
+    esmbuf = ogs_pkbuf_alloc(NULL, esm_message_container->length);
+    ogs_pkbuf_put_data(esmbuf,
+            esm_message_container->buffer, esm_message_container->length);
+
+    testesm_recv(sess, esmbuf);
+}

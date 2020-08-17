@@ -65,6 +65,7 @@ extern "C" {
 #include "common/emm-build.h"
 #include "common/emm-handler.h"
 #include "common/esm-build.h"
+#include "common/esm-handler.h"
 
 #undef OGS_LOG_DOMAIN
 #define OGS_LOG_DOMAIN 1

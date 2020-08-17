@@ -17,27 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef TEST_NAS_PATH_H
-#define TEST_NAS_PATH_H
+#ifndef TEST_ESM_HANDLE_H
+#define TEST_ESM_HANDLE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void testgmm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf);
-void testgsm_recv(test_sess_t *sess, ogs_pkbuf_t *pkbuf);
-
-void testgmm_send_to_gsm(test_sess_t *sess,
-        ogs_nas_payload_container_t *payload_container);
-
-void testemm_recv(test_ue_t *test_ue, ogs_pkbuf_t *pkbuf);
-void testesm_recv(test_sess_t *sess, ogs_pkbuf_t *pkbuf);
-
-void testemm_send_to_esm(test_sess_t *sess,
-    ogs_nas_esm_message_container_t *esm_message_container);
+void testesm_handle_pdn_connectivity_request(test_sess_t *sess,
+        ogs_nas_eps_pdn_connectivity_request_t *pdn_connectivity_request);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TEST_NAS_PATH_H */
+#endif /* TEST_ESM_HANDLE_H */
