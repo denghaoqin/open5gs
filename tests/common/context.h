@@ -67,6 +67,9 @@ typedef struct test_context_s {
     ogs_5gs_tai_t nr_tai;
     ogs_nr_cgi_t nr_cgi;
 
+    /* Default gNB IP address */
+    ogs_ip_t gnb_ip;
+
     ogs_list_t      test_ue_list;
 } test_context_t;
 
@@ -252,6 +255,7 @@ typedef struct test_sess_s {
     };
 
     ogs_ip_t ue_ip;
+
     ogs_ip_t upf_n3_ip;
     uint32_t upf_n3_teid;
     ogs_ip_t gnb_n3_ip;
@@ -268,6 +272,7 @@ typedef struct test_sess_s {
 
 typedef struct test_bearer_s {
     ogs_lnode_t     lnode;          /**< A node of list_t */
+    uint32_t        index;
 
     uint8_t         qfi;            /* 5GC */
     uint8_t         ebi;            /* EPC */

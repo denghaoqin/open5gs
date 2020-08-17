@@ -32,6 +32,7 @@ ogs_pkbuf_t *test_s1ap_build_initial_ue_message(
         test_ue_t *test_ue, ogs_pkbuf_t *emmbuf, bool s_tmsi);
 ogs_pkbuf_t *test_s1ap_build_uplink_nas_transport(
         test_ue_t *test_ue, ogs_pkbuf_t *emmbuf);
+ogs_pkbuf_t *test_s1ap_build_initial_context_setup_response(test_ue_t *test_ue);
 
 #ifdef __cplusplus
 }

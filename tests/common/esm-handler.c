@@ -24,41 +24,29 @@ void testesm_handle_activate_default_eps_bearer_context_request(
         ogs_nas_eps_activate_default_eps_bearer_context_request_t
             *activate_default_eps_bearer_context_request)
 {
+    test_sess_t *sess = NULL;
+    ogs_nas_pdn_address_t *pdn_address = NULL;
+
     ogs_assert(bearer);
+    sess = bearer->sess;
+    ogs_assert(sess);
     ogs_assert(activate_default_eps_bearer_context_request);
 
-}
+    pdn_address = &activate_default_eps_bearer_context_request->pdn_address;
 
-#if 0
-void testgsm_handle_pdu_session_establishment_accept(test_sess_t *sess,
-        ogs_nas_5gs_pdu_session_establishment_accept_t
-            *pdu_session_establishment_accept)
-{
-    ogs_nas_pdu_address_t *pdu_address = NULL;
-
-    ogs_assert(sess);
-    ogs_assert(pdu_session_establishment_accept);
-
-    pdu_address = &pdu_session_establishment_accept->pdu_address;
-
-    if (pdu_session_establishment_accept->presencemask &
-            OGS_NAS_5GS_PDU_SESSION_ESTABLISHMENT_ACCEPT_PDU_ADDRESS_PRESENT) {
-        switch (pdu_address->pdn_type) {
-        case OGS_PDU_SESSION_TYPE_IPV4:
-            sess->ue_ip.ipv4 = 1;
-            sess->ue_ip.addr = pdu_address->addr;
-            break;
-        case OGS_PDU_SESSION_TYPE_IPV6:
-            break;
-        case OGS_PDU_SESSION_TYPE_IPV4V6:
-            sess->ue_ip.ipv4 = 1;
-            sess->ue_ip.addr = pdu_address->both.addr;
-            break;
-        default:
-            ogs_fatal("Invalid PDU Address Type [%d]", pdu_address->pdn_type);
-            ogs_assert_if_reached();
-        }
-
+    switch (pdn_address->pdn_type) {
+    case OGS_PDU_SESSION_TYPE_IPV4:
+        sess->ue_ip.ipv4 = 1;
+        sess->ue_ip.addr = pdn_address->addr;
+        break;
+    case OGS_PDU_SESSION_TYPE_IPV6:
+        break;
+    case OGS_PDU_SESSION_TYPE_IPV4V6:
+        sess->ue_ip.ipv4 = 1;
+        sess->ue_ip.addr = pdn_address->both.addr;
+        break;
+    default:
+        ogs_fatal("Invalid PDU Address Type [%d]", pdn_address->pdn_type);
+        ogs_assert_if_reached();
     }
 }
-#endif

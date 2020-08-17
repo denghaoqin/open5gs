@@ -230,6 +230,13 @@ static void test1_func(abts_case *tc, void *data)
     ABTS_PTR_NOTNULL(tc, recvbuf);
     tests1ap_recv(test_ue, recvbuf);
 
+    /* Send Initial Context Setup Response */
+    sendbuf = test_s1ap_build_initial_context_setup_response(test_ue);
+    ABTS_PTR_NOTNULL(tc, sendbuf);
+    rv = testenb_s1ap_send(s1ap, sendbuf);
+    ABTS_INT_EQUAL(tc, OGS_OK, rv);
+
+    ogs_msleep(300);
 #if 0
     /* Send Initial Context Setup Response */
     rv = tests1ap_build_initial_context_setup_response(&sendbuf,

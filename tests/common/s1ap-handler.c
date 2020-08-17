@@ -140,7 +140,7 @@ void tests1ap_handle_initial_context_setup_request(
 
         memcpy(&bearer->sgw_s1u_teid, e_rab->gTP_TEID.buf, 
                 sizeof(bearer->sgw_s1u_teid));
-        bearer->enb_s1u_teid = be32toh(bearer->enb_s1u_teid);
+        bearer->sgw_s1u_teid = be32toh(bearer->sgw_s1u_teid);
         rv = ogs_asn_BIT_STRING_to_ip(
                 &e_rab->transportLayerAddress, &bearer->sgw_s1u_ip);
         ogs_assert(rv == OGS_OK);

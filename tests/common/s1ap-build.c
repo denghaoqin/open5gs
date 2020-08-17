@@ -38,7 +38,7 @@ ogs_pkbuf_t *test_s1ap_build_s1_setup_request(
 
     memset(&pdu, 0, sizeof (S1AP_S1AP_PDU_t));
     pdu.present = S1AP_S1AP_PDU_PR_initiatingMessage;
-    pdu.choice.initiatingMessage = 
+    pdu.choice.initiatingMessage =
         CALLOC(1, sizeof(S1AP_InitiatingMessage_t));
 
     initiatingMessage = pdu.choice.initiatingMessage;
@@ -313,6 +313,101 @@ ogs_pkbuf_t *test_s1ap_build_uplink_nas_transport(
     EUTRAN_CGI->cell_ID.buf[2] = (test_ue->e_cgi.cell_id >> 8);
     EUTRAN_CGI->cell_ID.buf[3] = (test_ue->e_cgi.cell_id);
     EUTRAN_CGI->cell_ID.bits_unused = 4;
+
+    return ogs_s1ap_encode(&pdu);
+}
+
+ogs_pkbuf_t *test_s1ap_build_initial_context_setup_response(test_ue_t *test_ue)
+{
+    int rv;
+
+    test_sess_t *sess = NULL;
+    test_bearer_t *bearer = NULL;
+
+    S1AP_S1AP_PDU_t pdu;
+    S1AP_SuccessfulOutcome_t *successfulOutcome = NULL;
+    S1AP_InitialContextSetupResponse_t *InitialContextSetupResponse = NULL;
+    ogs_sockaddr_t *addr = NULL;
+
+    S1AP_InitialContextSetupResponseIEs_t *ie = NULL;
+    S1AP_MME_UE_S1AP_ID_t *MME_UE_S1AP_ID = NULL;
+    S1AP_ENB_UE_S1AP_ID_t *ENB_UE_S1AP_ID = NULL;
+    S1AP_E_RABSetupListCtxtSURes_t *E_RABSetupListCtxtSURes = NULL;
+
+    S1AP_E_RABSetupItemCtxtSUResIEs_t *item = NULL;
+    S1AP_E_RABSetupItemCtxtSURes_t *e_rab = NULL;
+
+    ogs_assert(test_ue);
+    sess = ogs_list_first(&test_ue->sess_list);
+    ogs_assert(sess);
+    bearer = ogs_list_first(&sess->bearer_list);
+    ogs_assert(bearer);
+
+    memset(&pdu, 0, sizeof (S1AP_S1AP_PDU_t));
+    pdu.present = S1AP_S1AP_PDU_PR_successfulOutcome;
+    pdu.choice.successfulOutcome =
+        CALLOC(1, sizeof(S1AP_SuccessfulOutcome_t));
+
+    successfulOutcome = pdu.choice.successfulOutcome;
+    successfulOutcome->procedureCode =
+        S1AP_ProcedureCode_id_InitialContextSetup;
+    successfulOutcome->criticality = S1AP_Criticality_reject;
+    successfulOutcome->value.present =
+        S1AP_SuccessfulOutcome__value_PR_InitialContextSetupResponse;
+
+    InitialContextSetupResponse =
+        &successfulOutcome->value.choice.InitialContextSetupResponse;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialContextSetupResponseIEs_t));
+    ASN_SEQUENCE_ADD(&InitialContextSetupResponse->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_MME_UE_S1AP_ID;
+    ie->criticality = S1AP_Criticality_ignore;
+    ie->value.present =
+        S1AP_InitialContextSetupResponseIEs__value_PR_MME_UE_S1AP_ID;
+
+    MME_UE_S1AP_ID = &ie->value.choice.MME_UE_S1AP_ID;
+
+    *MME_UE_S1AP_ID = test_ue->mme_ue_s1ap_id;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialContextSetupResponseIEs_t));
+    ASN_SEQUENCE_ADD(&InitialContextSetupResponse->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_eNB_UE_S1AP_ID;
+    ie->criticality = S1AP_Criticality_ignore;
+    ie->value.present =
+        S1AP_InitialContextSetupResponseIEs__value_PR_ENB_UE_S1AP_ID;
+
+    ENB_UE_S1AP_ID = &ie->value.choice.ENB_UE_S1AP_ID;
+
+    *ENB_UE_S1AP_ID = test_ue->enb_ue_s1ap_id;
+
+    ie = CALLOC(1, sizeof(S1AP_InitialContextSetupResponseIEs_t));
+    ASN_SEQUENCE_ADD(&InitialContextSetupResponse->protocolIEs, ie);
+
+    ie->id = S1AP_ProtocolIE_ID_id_E_RABSetupListCtxtSURes;
+    ie->criticality = S1AP_Criticality_ignore;
+    ie->value.present =
+        S1AP_InitialContextSetupResponseIEs__value_PR_E_RABSetupListCtxtSURes;
+
+    E_RABSetupListCtxtSURes = &ie->value.choice.E_RABSetupListCtxtSURes;
+
+    item = CALLOC(1, sizeof(S1AP_E_RABSetupItemCtxtSUResIEs_t));
+    ASN_SEQUENCE_ADD(&E_RABSetupListCtxtSURes->list, item);
+
+    item->id = S1AP_ProtocolIE_ID_id_E_RABSetupItemCtxtSURes;
+    item->criticality = S1AP_Criticality_ignore;
+    item->value.present =
+        S1AP_E_RABSetupItemCtxtSUResIEs__value_PR_E_RABSetupItemCtxtSURes;
+
+    e_rab = &item->value.choice.E_RABSetupItemCtxtSURes;
+
+    e_rab->e_RAB_ID = bearer->ebi;
+
+    rv = ogs_asn_ip_to_BIT_STRING(&bearer->enb_s1u_ip,
+            &e_rab->transportLayerAddress);
+    ogs_assert(rv == OGS_OK);
+    ogs_asn_uint32_to_OCTET_STRING(bearer->enb_s1u_teid, &e_rab->gTP_TEID);
 
     return ogs_s1ap_encode(&pdu);
 }

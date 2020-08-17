@@ -76,6 +76,9 @@ static int test_context_validation(void)
                 OGS_PLMN_ID_LEN);
     }
 
+    test_self()->gnb_ip.addr = inet_addr(TEST_GNB_IPV4);
+    test_self()->gnb_ip.ipv4 = true;
+
     if (test_self()->nr_served_tai[0].list2.num) {
         memcpy(&test_self()->nr_tai, 
             &test_self()->nr_served_tai[0].list2.tai[0], sizeof(ogs_5gs_tai_t));
@@ -694,6 +697,11 @@ test_bearer_t *test_bearer_add(test_sess_t *sess)
     ogs_pool_alloc(&test_bearer_pool, &bearer);
     ogs_assert(bearer);
     memset(bearer, 0, sizeof *bearer);
+
+    bearer->index = ogs_pool_index(&test_bearer_pool, bearer);
+
+    memcpy(&bearer->enb_s1u_ip, &test_self()->gnb_ip, sizeof(ogs_ip_t));
+    bearer->enb_s1u_teid = bearer->index;
 
     bearer->sess = sess;
 
